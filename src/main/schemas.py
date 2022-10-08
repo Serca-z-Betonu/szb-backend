@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, NonNegativeInt
 
 
 class MetricType(Enum):
@@ -15,6 +15,28 @@ class MetricRequest(BaseModel):
     metric_type: MetricType
     value: float
     timestamp: datetime
+
+
+class Sex(Enum):
+    MALE = "MALE"
+    FEMALE = "FEMALE"
+
+
+class PatientDetailedResponse(BaseModel):
+    patient_id: int
+    name: str
+    surname: str
+    sex: Sex
+    birth_date: date
+    age: NonNegativeInt
+    health_state: float
+
+
+class PatientPreviewResponse(BaseModel):
+    patient_id: int
+    name: str
+    surname: str
+    health_state: float
 
 
 class MessageResponse(BaseModel):
