@@ -77,6 +77,7 @@ def prescription_status_response(
             prescription=prescription,
             now=now),
         expected_daily_dosage=_expected_daily_dosage(prescription),
+        expires_at=prescription.start_date,
     ) for (prescription, drug) in pairs]
 
 

@@ -72,6 +72,7 @@ class PrescriptionStatusResponse(BaseModel):
     drug_unit: DrugUnit
     average_actual_daily_dosage: NonNegativeFloat
     expected_daily_dosage: PositiveFloat
+    expires_at: date
 
 
 class MedicalEventType(Enum):
