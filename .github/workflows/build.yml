@@ -27,9 +27,9 @@ jobs:
         id: eval
         run: |
           if [[ ${{ inputs.stable == 'true' }} ]]; then
-            echo "::set-ouutput name=tag::latest"
+            echo "::set-output name=tag::latest"
           else
-            echo "::set-ouutput name=tag::${{ github.run_id }}"
+            echo "::set-output name=tag::${{ github.run_id }}"
           fi
       - name: build and push
         uses: docker/build-push-action@v3
