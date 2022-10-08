@@ -4,7 +4,7 @@ on:
     inputs:
       stable:
         type: boolean
-        description: 'Whether the image should be uploaded with the latest tag'
+        description: should be uploaded with the 'latest' tag
         default: true
 jobs:
   build:
@@ -35,4 +35,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: kklassa/szb-api:${{ steps.eval.outputs.tag }
+          tags: kklassa/szb-api:${{ steps.eval.outputs.tag }}
