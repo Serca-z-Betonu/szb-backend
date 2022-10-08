@@ -5,10 +5,10 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 from src.main.repositories import PatientNotFound
 
-from src.main.services import MetricService, PatientService
+from src.main.services import MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, error_message_response
+from .schemas import MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, error_message_response
 
 
 router = APIRouter()
@@ -85,16 +85,16 @@ def read_all_patients_preview_info(
         Provide[Container.patient_service])
 ):
     return patient_service.get_all_patients_preview_info()
-#
-# @router.get(
-#     "/prescriptions",
-#     # response_model=List[PatientPreviewResponse],
-#     responses=PATIENT_NOT_FOUND_RESPONSE
-# )
-# @inject
-# def read_patient_prescriptions_valid_now(
-#     patient_id=int
-#     prescription_service: PrescriptionService =
-#         Depends(Provide[Container.prescription_service])
-# ):
-#     return prescription_service.get_prescriptions_valid_now_for(patient_id)
+
+
+@router.get(
+    "/prescriptions",
+    response_model=List[PrescriptionStatusResponse],
+)
+@inject
+def read_patient_prescriptions_valid_now(
+    patient_id: int,
+    prescription_service: PrescriptionService =
+        Depends(Provide[Container.prescription_service])
+):
+    return prescription_service.get_prescriptions_valid_now_for(patient_id)

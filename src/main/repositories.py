@@ -66,6 +66,15 @@ class PatientRepository:
         return self._session_factory()
 
 
+class PrescriptionRepository:
+
+    def __init__(self, session_factory: Callable[..., Session]):
+        self._session_factory = session_factory
+
+    def _new_session(self) -> Session:
+        return self._session_factory()
+
+
 class PatientNotFound(RuntimeError):
 
     def __init__(self, patient_id: int) -> None:

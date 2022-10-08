@@ -62,7 +62,11 @@ class PrescribeRequest(BaseModel):
 
 
 class PrescriptionStatusResponse(BaseModel):
-    pass
+    prescription_id: int
+    drug_id: int
+    drug_name: str
+    average_actual_daily_dosage: float
+    expected_daily_dosage: float
 
 
 class MessageResponse(BaseModel):
