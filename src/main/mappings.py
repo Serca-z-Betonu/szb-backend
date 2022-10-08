@@ -5,7 +5,7 @@ from typing import List, Tuple
 from dateutil.relativedelta import relativedelta
 
 from .models import Drug, MedicalEvent, Metric, Patient, Prescription
-from .schemas import DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex
+from .schemas import DrugResponse, DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex
 
 
 def metric_request_to_model(
@@ -62,6 +62,14 @@ def _calculate_age(birth_date: date):
     now_date = datetime.now().date()
     now_date = datetime.now().date()
     return relativedelta(now_date, birth_date).years
+
+
+def drug_model_to_response(model: Drug):
+    return DrugResponse(
+        drug_id=model.drug_id,
+        name=model.name,
+        unit=DrugUnit(model.unit)
+    )
 
 
 def prescription_status_response(

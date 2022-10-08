@@ -52,17 +52,23 @@ class PatientPreviewResponse(BaseModel):
     health_state: float
 
 
+class DrugUnit(Enum):
+    MG = "MG"
+    ML = "ML"
+
+
+class DrugResponse(BaseModel):
+    drug_id: int
+    name: str
+    unit: DrugUnit
+
+
 class PrescribeRequest(BaseModel):
     drug_id: int
     start_date: date
     end_date: date
     dose_size: PositiveInt
     daily_dose_count: PositiveInt
-
-
-class DrugUnit(Enum):
-    MG = "MG"
-    ML = "ML"
 
 
 class PrescriptionStatusResponse(BaseModel):
