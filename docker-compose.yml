@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=password
+  api:
+    build: .
+    ports:
+      - '8090:8090'
+    # volumes:
+    #   - ./src/main:/code/app
+    environment:
+      - DATABASE__URL=postgresql://postgres:password@db/postgres
+      # - DATABASE__INSERT_SCRIPT=./insert-data.sql
+    depends_on:
+      - db
+    command: >
+      bash -c "uvicorn src.main.main:app --host 0.0.0.0 --port 8090"
