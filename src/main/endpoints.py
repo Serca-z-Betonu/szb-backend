@@ -5,7 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 from src.main.repositories import PatientNotFound
 
-from src.main.services import MetricService, PatientService, PrescriptionService
+from src.main.services import MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
 from .containers import Container
 from .schemas import MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, error_message_response
@@ -96,9 +96,10 @@ def read_all_patients_preview_info(
 @inject
 def read_patients_medical_history(
     patient_id: int,
-    patient_service: PatientService = Depends(Provide[Container.patient_service])
+    medical_history_service: MedicalHistoryService =
+        Depends(Provide[Container.medical_history_service])
 ):
-    return patient_service.get_patients_medical_history(patient_id)
+    return medical_history_service.get_patients_medical_history(patient_id)
 
 
 @router.get(

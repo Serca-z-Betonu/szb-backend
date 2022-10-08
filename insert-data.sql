@@ -1,4 +1,4 @@
-truncate table patients, metrics, prescriptions, drugs, prescription_fulfillments;
+truncate table patients, metrics, prescriptions, drugs, prescription_fulfillments, medical_events;
 commit;
 
 insert into patients values(1, 'Jan', 'Kowalski', '76052302345', 'MALE', '1976-05-23');
@@ -73,4 +73,22 @@ insert into prescription_fulfillments(prescription_id, timestamp) values(2, '202
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T07:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T13:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T20:00:00Z');
+commit;
+
+insert into medical_events(patient_id, medical_event_type, summary, description, timestamp)
+  values(1, 'ADVISE', 'Przeziębienie', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
+    Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
+    '2022-10-06T12:13:43Z');
+insert into medical_events(patient_id, medical_event_type, summary, description, timestamp)
+  values(1, 'PROCEDURE', 'Operacja plastyczna prawego łokcia', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
+    Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
+    '2020-09-22T20:22:43Z');
+insert into medical_events(patient_id, medical_event_type, summary, description, timestamp)
+  values(1, 'PROCEDURE', 'Przeszczep nerki', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
+    Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
+    '2004-5-13T07:23:44');
+insert into medical_events(patient_id, medical_event_type, summary, description, timestamp)
+  values(1, 'ADVISE', 'Bezsenność', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
+    Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
+    '2015-01-22T12:13:43Z');
 commit;

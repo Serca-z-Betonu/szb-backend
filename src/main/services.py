@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from .mappings import metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescription_status_response
-from .repositories import DrugRepository, MetricRepository, PatientRepository, PrescriptionRepository
+from .mappings import medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescription_status_response
+from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
 from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescriptionStatusResponse
 
 
@@ -53,20 +53,6 @@ class PatientService:
         patient_model = self._repository.get_by_id(patient_id)
         return patient_model_to_detailed_response(patient_model)
 
-    def get_patients_medical_history(self, patient_id: int):
-        return [
-            MedicalEventResponse(
-                medical_event_type=MedicalEventType.ADVISE,
-                description="wąchanie dupy",
-                timestamp=datetime.now(),
-            ),
-            MedicalEventResponse(
-                medical_event_type=MedicalEventType.PROCEDURE,
-                description="depilacja moszny",
-                timestamp=datetime.now(),
-            ),
-        ]
-
     def get_all_patients_preview_info(self):
         patient_models = self._repository.get_all()
         return [patient_model_to_preview_response(patient_model) for
@@ -75,10 +61,7 @@ class PatientService:
 
 class PrescriptionService:
 
-    def __init__(
-        self,
-        prescription_repository: PrescriptionRepository,
-    ):
+    def __init__(self, prescription_repository: PrescriptionRepository):
         self._repository: PrescriptionRepository = prescription_repository
 
     def get_prescriptions_valid_now_for(self, patient_id: int):
@@ -87,3 +70,15 @@ class PrescriptionService:
             valid_at=datetime.now().date()
         )
         return prescription_status_response(pairs, now=datetime.now())
+
+
+class MedicalHistoryService:
+
+    def __init__(self, medical_history_repository: MedicalHistoryRepository):
+        self._repository: MedicalHistoryRepository = medical_history_repository
+
+    def get_patients_medical_history(self, patient_id: int):
+        medical_event_models = self._repository.get_for_patient(patient_id)
+        return [medical_event_model_to_response(model) for
+                model in medical_event_models]
+

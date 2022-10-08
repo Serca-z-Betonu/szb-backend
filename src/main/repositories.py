@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import IntegrityError
 
-from .models import Drug, Metric, Patient, Prescription, PrescriptionFulfillment
+from .models import Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
 
 
 class MetricRepository:
@@ -111,6 +111,27 @@ class PrescriptionRepository:
             result = session.execute(statement) \
                 .all()
             return [tuple(row) for row in result]
+
+    def _new_session(self) -> Session:
+        return self._session_factory()
+
+
+class MedicalHistoryRepository:
+
+    def __init__(self, session_factory: Callable[..., Session]):
+        self._session_factory = session_factory
+
+    def get_for_patient(
+        self,
+        patient_id: int,
+    ):
+        statement = select(MedicalEvent).where(
+            MedicalEvent.patient_id == patient_id
+        )
+        with self._new_session() as session:
+            medical_events: List[MedicalEvent] = session.execute(statement) \
+                .scalars().all()
+            return medical_events
 
     def _new_session(self) -> Session:
         return self._session_factory()

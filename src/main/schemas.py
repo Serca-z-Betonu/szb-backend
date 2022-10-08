@@ -82,6 +82,7 @@ class MedicalEventType(Enum):
 
 class MedicalEventResponse(BaseModel):
     medical_event_type: MedicalEventType
+    summary: str
     description: str
     timestamp: datetime
 

@@ -1,6 +1,6 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import List
-from sqlalchemy import DATE, Column, INTEGER, VARCHAR, ForeignKey
+from sqlalchemy import DATE, TEXT, Column, INTEGER, VARCHAR, ForeignKey
 from sqlalchemy.dialects.postgresql import CHAR, DOUBLE_PRECISION, ENUM, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -47,13 +47,6 @@ class Patient(Base):
     birth_date: date = Column(DATE)                     # type: ignore
 
 
-drug_unit_enum = ENUM(
-    "MG",
-    "ML",
-    name="drug_unit"
-)
-
-
 class PrescriptionFulfillment(Base):
     __tablename__ = "prescription_fulfillments"
     prescription_fulfillment_id: int = Column(  # type: ignore
@@ -78,8 +71,35 @@ class Prescription(Base):
     fulfillments = relationship("PrescriptionFulfillment")
 
 
+drug_unit_enum = ENUM(
+    "MG",
+    "ML",
+    name="drug_unit"
+)
+
+
 class Drug(Base):
     __tablename__ = "drugs"
     drug_id: int = Column(INTEGER, primary_key=True)    # type: ignore
     name: str = Column(VARCHAR(64), unique=True)        # type: ignore
     unit: str = Column(drug_unit_enum)                  # type: ignore
+
+
+medical_event_type_enum = ENUM(
+    "ADVISE",
+    "PROCEDURE",
+    name="medical_event_type"
+)
+
+
+class MedicalEvent(Base):
+    __tablename__ = "medical_events"
+    medical_event_id: int = Column(INTEGER, primary_key=True) # type: ignore
+    patient_id: int = Column(  # type: ignore
+        INTEGER,
+        ForeignKey("patients.patient_id")
+    )
+    medical_event_type = Column(medical_event_type_enum)
+    summary: str = Column(VARCHAR(128)) # type: ignore
+    description: str = Column(TEXT) # type: ignore
+    timestamp: datetime = Column(TIMESTAMP) # type: ignore

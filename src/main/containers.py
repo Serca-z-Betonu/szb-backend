@@ -3,8 +3,8 @@ from dependency_injector.containers import (
 from dependency_injector.providers import Configuration, Factory, Singleton
 
 from .database import Database
-from .repositories import MetricRepository, PatientRepository, PrescriptionRepository
-from .services import MetricService, PatientService, PrescriptionService
+from .repositories import MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
+from .services import MedicalHistoryService, MetricService, PatientService, PrescriptionService
 from .settings import Settings
 
 
@@ -50,4 +50,14 @@ class Container(DeclarativeContainer):
     prescription_service = Factory(
         PrescriptionService,
         prescription_repository=prescription_repository,
+    )
+
+    medical_history_repository = Factory(
+        MedicalHistoryRepository,
+        session_factory=database.provided.session,
+    )
+
+    medical_history_service = Factory(
+        MedicalHistoryService,
+        medical_history_repository=medical_history_repository,
     )

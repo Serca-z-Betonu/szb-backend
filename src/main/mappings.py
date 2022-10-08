@@ -4,8 +4,8 @@ from typing import List, Tuple
 
 from dateutil.relativedelta import relativedelta
 
-from .models import Drug, Metric, Patient, Prescription
-from .schemas import DrugUnit, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, Sex
+from .models import Drug, MedicalEvent, Metric, Patient, Prescription
+from .schemas import DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, Sex
 
 
 def metric_request_to_model(
@@ -88,3 +88,11 @@ def _average_actual_daily_dosage(prescription: Prescription, now: datetime):
 
 def _expected_daily_dosage(prescription: Prescription):
     return prescription.daily_dose_count * prescription.dose_size
+
+def medical_event_model_to_response(model: MedicalEvent):
+    return MedicalEventResponse(
+        medical_event_type=MedicalEventType(model.medical_event_type),
+        summary=model.summary,
+        description=model.description,
+        timestamp=model.timestamp
+    )
