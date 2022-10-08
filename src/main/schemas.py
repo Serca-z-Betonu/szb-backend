@@ -52,6 +52,19 @@ class PatientPreviewResponse(BaseModel):
     health_state: float
 
 
+class PrescribeRequest(BaseModel):
+    patient_id: int
+    drug_id: int
+    start_date: date
+    end_date: date
+    daily_dose_count: int
+    dose_size: int
+
+
+class PrescriptionStatusResponse(BaseModel):
+    pass
+
+
 class MessageResponse(BaseModel):
     message: str
 
