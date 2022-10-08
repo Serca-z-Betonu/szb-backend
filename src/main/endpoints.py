@@ -19,7 +19,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/metric",
+    "/metrics",
     status_code=status.HTTP_201_CREATED,
     response_model=MessageResponse
 )
