@@ -5,10 +5,10 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 from src.main.repositories import DrugNotFound, PatientNotFound, PrescriptionNotFound
 
-from src.main.services import MedicalHistoryService, MetricService, PatientService, PrescriptionService
+from src.main.services import DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, error_message_response
+from .schemas import DrugResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, error_message_response
 
 
 router = APIRouter()
@@ -90,19 +90,6 @@ def read_all_patients_preview_info(
 
 
 @router.get(
-    "/history",
-    response_model=List[MedicalEventResponse],
-)
-@inject
-def read_patients_medical_history(
-    patient_id: int,
-    medical_history_service: MedicalHistoryService =
-        Depends(Provide[Container.medical_history_service])
-):
-    return medical_history_service.get_patients_medical_history(patient_id)
-
-
-@router.get(
     "/prescriptions",
     response_model=List[PrescriptionStatusResponse],
 )
@@ -114,6 +101,16 @@ def read_patient_prescriptions_valid_now(
 ):
     return prescription_service.get_prescriptions_valid_now_for(patient_id)
 
+
+@router.get(
+    "/drugs",
+    response_model=List[DrugResponse],
+)
+@inject
+def read_all_drugs(
+    drug_service: DrugService = Depends(Provide[Container.drug_service])
+):
+    return drug_service.get_all_drugs_preview_info()
 
 @router.post(
     "/prescriptions",
@@ -156,3 +153,16 @@ def fulfill_prescription(
         return MessageResponse(message="prescription fulfilled")
     except PrescriptionNotFound as e:
         return error_message_response(e, status.HTTP_404_NOT_FOUND)
+
+
+@router.get(
+    "/history",
+    response_model=List[MedicalEventResponse],
+)
+@inject
+def read_patients_medical_history(
+    patient_id: int,
+    medical_history_service: MedicalHistoryService =
+        Depends(Provide[Container.medical_history_service])
+):
+    return medical_history_service.get_patients_medical_history(patient_id)

@@ -9,10 +9,16 @@ from sqlalchemy.exc import IntegrityError
 from .models import Base, Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
 
 
-class MetricRepository:
+class Repository:
 
     def __init__(self, session_factory: Callable[..., Session]):
         self._session_factory = session_factory
+
+    def _new_session(self) -> Session:
+        return self._session_factory()
+
+
+class MetricRepository(Repository):
 
     def save_all(self, metrics: List[Metric]):
         try:
@@ -43,14 +49,8 @@ class MetricRepository:
             metrics: List[Metric] = session.execute(statement).scalars().all()
             return metrics
 
-    def _new_session(self) -> Session:
-        return self._session_factory()
 
-
-class PatientRepository:
-
-    def __init__(self, session_factory: Callable[..., Session]):
-        self._session_factory = session_factory
+class PatientRepository(Repository):
 
     def get_by_id(self, patient_id: int):
         statement = select(Patient).where(Patient.patient_id == patient_id)
@@ -69,33 +69,17 @@ class PatientRepository:
                 statement).scalars().all()
             return patients
 
-    def _new_session(self) -> Session:
-        return self._session_factory()
 
+class DrugRepository(Repository):
 
-class DrugRepository:
-
-    def __init__(self, session_factory: Callable[..., Session]):
-        self._session_factory = session_factory
-
-    def get_by_id(self, drug_id: int):
-        statement = select(Drug).where(Drug.drug_id == drug_id)
+    def get_all(self):
+        statement = select(Drug)
         with self._new_session() as session:
-            drug: Drug | None = session.execute(
-                statement).scalars().first()
-            if drug:
-                return drug
-            else:
-                raise DrugNotFound(drug_id)
-
-    def _new_session(self) -> Session:
-        return self._session_factory()
+            drugs: List[Drug] = session.execute(statement).scalars().all()
+            return drugs
 
 
-class PrescriptionRepository:
-
-    def __init__(self, session_factory: Callable[..., Session]):
-        self._session_factory = session_factory
+class PrescriptionRepository(Repository):
 
     def get_for_patient(
         self,
@@ -137,14 +121,8 @@ class PrescriptionRepository:
             if is_foreign_key_violation(e, of_table=Prescription):
                 raise PrescriptionNotFound(e.params["prescription_id"]) from e
 
-    def _new_session(self) -> Session:
-        return self._session_factory()
 
-
-class MedicalHistoryRepository:
-
-    def __init__(self, session_factory: Callable[..., Session]):
-        self._session_factory = session_factory
+class MedicalHistoryRepository(Repository):
 
     def get_for_patient(
         self,
@@ -157,9 +135,6 @@ class MedicalHistoryRepository:
             medical_events: List[MedicalEvent] = session.execute(statement) \
                 .scalars().all()
             return medical_events
-
-    def _new_session(self) -> Session:
-        return self._session_factory()
 
 
 class PatientNotFound(RuntimeError):

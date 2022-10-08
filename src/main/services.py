@@ -3,7 +3,7 @@ from typing import List
 
 from src.main.models import PrescriptionFulfillment
 
-from .mappings import medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescribe_request_to_model, prescription_status_response
+from .mappings import drug_model_to_response, medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescribe_request_to_model, prescription_status_response
 from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
 from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescribeRequest, PrescriptionStatusResponse
 
@@ -60,6 +60,16 @@ class PatientService:
         return [patient_model_to_preview_response(patient_model) for
                 patient_model in patient_models]
 
+
+class DrugService:
+
+    def __init__(self, drug_repository: DrugRepository):
+        self._repository: DrugRepository = drug_repository
+
+    def get_all_drugs_preview_info(self):
+        drug_models = self._repository.get_all()
+        return [drug_model_to_response(drug_model) for
+                drug_model in drug_models]
 
 class PrescriptionService:
 
