@@ -3,8 +3,8 @@ from dependency_injector.containers import (
 from dependency_injector.providers import Configuration, Factory, Singleton
 
 from .database import Database
-from .repositories import NoteRepository
-from .services import NoteService
+from .repositories import MetricRepository, NoteRepository
+from .services import MetricService, NoteService
 from .settings import Settings
 
 
@@ -20,6 +20,16 @@ class Container(DeclarativeContainer):
         Database,
         url=config.database.url,
         echo=config.database.echo
+    )
+
+    metric_repository = Factory(
+        MetricRepository,
+        session_factory=database.provided.session,
+    )
+
+    metric_service = Factory(
+        MetricService,
+        metric_repository=metric_repository,
     )
 
     note_repository = Factory(

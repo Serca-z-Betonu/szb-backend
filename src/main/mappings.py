@@ -1,5 +1,17 @@
-from .models import Note
-from .schemas import NoteRequest, NoteResponse
+from .models import Metric, Note
+from .schemas import MetricRequest, NoteRequest, NoteResponse
+
+
+def metric_request_to_model(
+        request: MetricRequest,
+        user_id: int,
+) -> Metric:
+    return Metric(
+        user_id=user_id,
+        metric_type=request.metric_type.value,
+        value=request.value,
+        timestamp=request.timestamp
+    )
 
 
 def note_model_to_response(model: Note) -> NoteResponse:

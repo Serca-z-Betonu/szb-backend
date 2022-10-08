@@ -12,7 +12,7 @@ from .schemas import (
     NoteResponse,
     error_message_response,
 )
-from .services import NoteService
+from .services import MetricService, NoteService
 
 
 router = APIRouter()
@@ -26,7 +26,8 @@ router = APIRouter()
 @inject
 def post_metric(
     user_id: int,
-    request: List[MetricRequest],
-    note_service: NoteService = Depends(Provide[Container.note_service])
+    requests: List[MetricRequest],
+    metric_service: MetricService = Depends(Provide[Container.metric_service])
 ):
+    metric_service.create_metrics(user_id=user_id, requests=requests)
     return MessageResponse(message="metric added")

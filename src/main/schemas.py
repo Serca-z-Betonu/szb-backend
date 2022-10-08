@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, NonNegativeInt
@@ -13,6 +14,7 @@ class MetricType(Enum):
 class MetricRequest(BaseModel):
     metric_type: MetricType
     value: float
+    timestamp: datetime
 
 
 class NoteRequest(BaseModel):
