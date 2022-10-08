@@ -75,6 +75,17 @@ class PrescriptionStatusResponse(BaseModel):
     expected_daily_dosage: float
 
 
+class MedicalEventType(Enum):
+    PROCEDURE = "PROCEDURE"
+    ADVISE = "ADVISE"
+
+
+class MedicalEventResponse(BaseModel):
+    medical_event_type: MedicalEventType
+    description: str
+    timestamp: datetime
+
+
 class MessageResponse(BaseModel):
     message: str
 

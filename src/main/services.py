@@ -3,7 +3,7 @@ from typing import List
 
 from .mappings import metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescription_status_response
 from .repositories import DrugRepository, MetricRepository, PatientRepository, PrescriptionRepository
-from .schemas import MetricRequest, MetricType, PrescriptionStatusResponse
+from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescriptionStatusResponse
 
 
 DEFAULT_METRICS_BUFFER = timedelta(days=7)
@@ -52,6 +52,20 @@ class PatientService:
     def get_patient_details_by_id(self, patient_id: int):
         patient_model = self._repository.get_by_id(patient_id)
         return patient_model_to_detailed_response(patient_model)
+
+    def get_patients_medical_history(self, patient_id: int):
+        return [
+            MedicalEventResponse(
+                medical_event_type=MedicalEventType.ADVISE,
+                description="wąchanie dupy",
+                timestamp=datetime.now(),
+            ),
+            MedicalEventResponse(
+                medical_event_type=MedicalEventType.PROCEDURE,
+                description="depilacja moszny",
+                timestamp=datetime.now(),
+            ),
+        ]
 
     def get_all_patients_preview_info(self):
         patient_models = self._repository.get_all()

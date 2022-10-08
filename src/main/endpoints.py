@@ -8,7 +8,7 @@ from src.main.repositories import PatientNotFound
 from src.main.services import MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, error_message_response
+from .schemas import MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, error_message_response
 
 
 router = APIRouter()
@@ -87,6 +87,18 @@ def read_all_patients_preview_info(
         Provide[Container.patient_service])
 ):
     return patient_service.get_all_patients_preview_info()
+
+
+@router.get(
+    "/history",
+    response_model=List[MedicalEventResponse],
+)
+@inject
+def read_patients_medical_history(
+    patient_id: int,
+    patient_service: PatientService = Depends(Provide[Container.patient_service])
+):
+    return patient_service.get_patients_medical_history(patient_id)
 
 
 @router.get(
