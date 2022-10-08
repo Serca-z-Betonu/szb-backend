@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Type
 from datetime import date, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload, subqueryload
@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import IntegrityError
 
-from .models import Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
+from .models import Base, Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
 
 
 class MetricRepository:
@@ -112,6 +112,20 @@ class PrescriptionRepository:
                 .all()
             return [tuple(row) for row in result]
 
+    def save(self, prescription: Prescription):
+        try:
+            with self._new_session() as session:
+                session.add(prescription)
+                session.commit()
+                session.refresh(prescription)
+                return prescription
+        except IntegrityError as e:
+            if is_foreign_key_violation(e, of_table=Patient):
+                raise PatientNotFound(e.params["patient_id"]) from e
+            elif is_foreign_key_violation(e, of_table=Drug):
+                raise DrugNotFound(e.params["drug_id"]) from e
+            raise
+
     def _new_session(self) -> Session:
         return self._session_factory()
 
@@ -149,3 +163,10 @@ class DrugNotFound(RuntimeError):
     def __init__(self, drug_id: int) -> None:
         self.drug_id = drug_id
         super().__init__(f"Drug with id {drug_id} not found")
+
+
+def is_foreign_key_violation(error: IntegrityError, of_table: Type[Base]):
+    table_name: str = of_table.__tablename__
+    return str(error.orig).endswith(
+        f"is not present in table \"{table_name}\".\n"
+    )

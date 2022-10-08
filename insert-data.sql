@@ -24,6 +24,15 @@ insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'HEART
 insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'HEARTRATE', 110, '2022-10-07T20:00:00Z');
 insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'HEARTRATE', 90, '2022-10-07T21:00:00Z');
 
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 80, '2022-10-02T08:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 80.5, '2022-10-02T21:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 79.7, '2022-10-03T08:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 79, '2022-10-03T21:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 78.6, '2022-10-04T08:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 79.5, '2022-10-04T21:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 81.1, '2022-10-07T08:00:00Z');
+insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'WEIGHT', 81.5, '2022-10-07T21:00:00Z');
+
 insert into metrics (patient_id, metric_type, value, timestamp) values(2, 'HEARTRATE', 100, '2022-10-07T10:00:00Z');
 insert into metrics (patient_id, metric_type, value, timestamp) values(2, 'HEARTRATE', 120, '2022-10-07T11:00:00Z');
 insert into metrics (patient_id, metric_type, value, timestamp) values(2, 'HEARTRATE', 110, '2022-10-07T12:00:00Z');

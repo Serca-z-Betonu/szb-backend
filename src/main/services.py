@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from .mappings import medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescription_status_response
+from .mappings import medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescribe_request_to_model, prescription_status_response
 from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
-from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescriptionStatusResponse
+from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescribeRequest, PrescriptionStatusResponse
 
 
 DEFAULT_METRICS_BUFFER = timedelta(days=7)
@@ -71,6 +71,13 @@ class PrescriptionService:
         )
         return prescription_status_response(pairs, now=datetime.now())
 
+    def prescribe(self, patient_id: int, request: PrescribeRequest):
+        prescription_model = prescribe_request_to_model(
+            request,
+            patient_id=patient_id
+        )
+        self._repository.save(prescription_model)
+
 
 class MedicalHistoryService:
 
@@ -81,4 +88,3 @@ class MedicalHistoryService:
         medical_event_models = self._repository.get_for_patient(patient_id)
         return [medical_event_model_to_response(model) for
                 model in medical_event_models]
-
