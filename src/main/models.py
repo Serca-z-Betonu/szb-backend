@@ -19,7 +19,7 @@ metric_type_enum = ENUM(
 class Metric(Base):
     __tablename__ = "metrics"
     metric_id: int = Column(INTEGER, primary_key=True)  # type: ignore
-    user_id: int = Column(INTEGER)                      # type: ignore
+    patient_id: int = Column(INTEGER)                      # type: ignore
     metric_type = Column(metric_type_enum)
     value: float = Column(DOUBLE_PRECISION)             # type: ignore
     timestamp: datetime = Column(TIMESTAMP)             # type: ignore

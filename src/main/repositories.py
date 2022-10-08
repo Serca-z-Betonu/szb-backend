@@ -21,6 +21,23 @@ class MetricRepository:
                 session.refresh(metric)
             return metrics
 
+    def get_metrics_for_patient(
+        self,
+        patient_id: int,
+        metric_type: str,
+        start_timestamp: datetime,
+        end_timestamp: datetime
+    ):
+        statement = select(Metric).where(
+            Metric.patient_id == patient_id,
+            Metric.metric_type == metric_type,
+            Metric.timestamp >= start_timestamp,
+            Metric.timestamp <= end_timestamp,
+        ).order_by(Metric.timestamp)
+        with self._new_session() as session:
+            metrics: List[Metric] = session.execute(statement).scalars().all()
+            return metrics
+
     def _new_session(self) -> Session:
         return self._session_factory()
 

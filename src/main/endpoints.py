@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List
 
 from dependency_injector.wiring import Provide, inject
@@ -7,7 +8,7 @@ from src.main.repositories import PatientNotFound
 from src.main.services import MetricService, PatientService
 
 from .containers import Container
-from .schemas import MessageResponse, MetricRequest, PatientDetailedResponse, PatientPreviewResponse, error_message_response
+from .schemas import MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, error_message_response
 
 
 router = APIRouter()
@@ -37,13 +38,35 @@ def post_metric(
 
 
 @router.get(
+    "/metrics",
+    status_code=status.HTTP_201_CREATED,
+    response_model=MetricResponse,
+)
+@inject
+def read_metric_for_patient(
+    patient_id: int,
+    metric_type: MetricType,
+    start_timestamp: datetime,
+    end_timestamp: datetime,
+    metric_service: MetricService = Depends(Provide[Container.metric_service])
+):
+    return metric_service.get_metrics_for_patient(
+        patient_id=patient_id,
+        metric_type=metric_type,
+        start_timestamp=start_timestamp,
+        end_timestamp=end_timestamp,
+    )
+
+
+@router.get(
     "/patients/{patient_id}",
     response_model=PatientDetailedResponse
 )
 @inject
 def read_detailed_patient_info(
     patient_id: int,
-    patient_service: PatientService = Depends(Provide[Container.patient_service])
+    patient_service: PatientService = Depends(
+        Provide[Container.patient_service])
 ):
     try:
         return patient_service.get_patient_details_by_id(patient_id)
@@ -58,6 +81,20 @@ def read_detailed_patient_info(
 )
 @inject
 def read_all_patients_preview_info(
-    patient_service: PatientService = Depends(Provide[Container.patient_service])
+    patient_service: PatientService = Depends(
+        Provide[Container.patient_service])
 ):
     return patient_service.get_all_patients_preview_info()
+#
+# @router.get(
+#     "/prescriptions",
+#     # response_model=List[PatientPreviewResponse],
+#     responses=PATIENT_NOT_FOUND_RESPONSE
+# )
+# @inject
+# def read_patient_prescriptions_valid_now(
+#     patient_id=int
+#     prescription_service: PrescriptionService =
+#         Depends(Provide[Container.prescription_service])
+# ):
+#     return prescription_service.get_prescriptions_valid_now_for(patient_id)

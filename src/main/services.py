@@ -1,8 +1,9 @@
+from datetime import datetime
 from typing import List
 
-from .mappings import metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response
+from .mappings import metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response
 from .repositories import MetricRepository, PatientRepository
-from .schemas import MetricRequest
+from .schemas import MetricRequest, MetricType
 
 
 class MetricService:
@@ -16,6 +17,24 @@ class MetricService:
             request in requests
         ]
         self._repository.save_all(metric_models)
+
+    def get_metrics_for_patient(
+            self,
+            patient_id: int,
+            metric_type: MetricType,
+            start_timestamp: datetime,
+            end_timestamp: datetime
+    ):
+        metrics = self._repository.get_metrics_for_patient(
+            patient_id=patient_id,
+            metric_type=metric_type.value,
+            start_timestamp=start_timestamp,
+            end_timestamp=end_timestamp
+        )
+        return metric_models_to_response(
+            models=metrics,
+            expected_metric_type=metric_type,
+        )
 
 
 class PatientService:
