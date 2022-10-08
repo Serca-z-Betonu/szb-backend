@@ -3,6 +3,12 @@ commit;
 
 insert into patients values(1, 'Jan', 'Kowalski', '76052302345', 'MALE', '1976-05-23');
 insert into patients values(2, 'Ewa', 'Kowalska', '99010254321', 'FEMALE', '1999-01-02');
+insert into patients values(3, 'Kacper', 'Duży', '99010254321', 'MALE', '1999-01-02');
+insert into patients values(4, 'Danuta', 'Mała', '99010254321', 'FEMALE', '1999-01-02');
+insert into patients values(5, 'Marianna', 'Wąska', '99010254321', 'FEMALE', '1999-01-02');
+insert into patients values(6, 'Jacek', 'Szeroki', '99010254321', 'MALE', '1999-01-02');
+insert into patients values(7, 'Maciek', 'Niski', '99010254321', 'MALE', '1999-01-02');
+insert into patients values(8, 'Włodzimierz', 'Biały', '99010254321', 'MALE', '1999-01-02');
 commit;
 
 insert into metrics (patient_id, metric_type, value, timestamp) values(1, 'HEARTRATE', 100, '2022-10-07T10:00:00Z');
@@ -44,4 +50,27 @@ commit;
 
 insert into prescription_fulfillments(prescription_id, timestamp) values(1, '2022-10-01T13:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(1, '2022-10-01T20:00:00Z');
+commit;
+
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-01T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-01T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-01T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-02T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-02T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-02T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-03T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-03T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-03T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-04T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-04T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-04T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-05T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-05T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-05T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-06T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-06T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-06T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T20:00:00Z');
 commit;
