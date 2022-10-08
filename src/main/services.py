@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from typing import List
 
+from src.main.models import PrescriptionFulfillment
+
 from .mappings import medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescribe_request_to_model, prescription_status_response
 from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
 from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescribeRequest, PrescriptionStatusResponse
@@ -77,6 +79,16 @@ class PrescriptionService:
             patient_id=patient_id
         )
         self._repository.save(prescription_model)
+
+    def fulfill(self, prescription_id: int, timestamp: datetime | None):
+        if not timestamp:
+            timestamp = datetime.now()
+        self._repository.save_fulfillment(
+            PrescriptionFulfillment(
+                prescription_id=prescription_id,
+                timestamp=timestamp
+            )
+        )
 
 
 class MedicalHistoryService:

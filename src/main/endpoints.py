@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
-from src.main.repositories import DrugNotFound, PatientNotFound
+from src.main.repositories import DrugNotFound, PatientNotFound, PrescriptionNotFound
 
 from src.main.services import MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
@@ -134,4 +134,25 @@ def prescribe(
         )
         return MessageResponse(message="new prescription created")
     except (PatientNotFound, DrugNotFound) as e:
+        return error_message_response(e, status.HTTP_404_NOT_FOUND)
+
+
+@router.post(
+    "/prescriptions/fulfill",
+    status_code=status.HTTP_201_CREATED,
+)
+@inject
+def fulfill_prescription(
+    prescription_id: int,
+    timestamp: datetime | None,
+    prescription_service: PrescriptionService =
+        Depends(Provide[Container.prescription_service])
+):
+    try:
+        prescription_service.fulfill(
+            prescription_id=prescription_id,
+            timestamp=timestamp,
+        )
+        return MessageResponse(message="prescription fulfilled")
+    except PrescriptionNotFound as e:
         return error_message_response(e, status.HTTP_404_NOT_FOUND)

@@ -126,6 +126,17 @@ class PrescriptionRepository:
                 raise DrugNotFound(e.params["drug_id"]) from e
             raise
 
+    def save_fulfillment(self, fulfillment: PrescriptionFulfillment):
+        try:
+            with self._new_session() as session:
+                session.add(fulfillment)
+                session.commit()
+                session.refresh(fulfillment)
+                return fulfillment
+        except IntegrityError as e:
+            if is_foreign_key_violation(e, of_table=Prescription):
+                raise PrescriptionNotFound(e.params["prescription_id"]) from e
+
     def _new_session(self) -> Session:
         return self._session_factory()
 
@@ -163,6 +174,13 @@ class DrugNotFound(RuntimeError):
     def __init__(self, drug_id: int) -> None:
         self.drug_id = drug_id
         super().__init__(f"Drug with id {drug_id} not found")
+
+
+class PrescriptionNotFound(RuntimeError):
+
+    def __init__(self, prescription_id: int) -> None:
+        self.drug_id = prescription_id
+        super().__init__(f"Prescription with id {prescription_id} not found")
 
 
 def is_foreign_key_violation(error: IntegrityError, of_table: Type[Base]):
