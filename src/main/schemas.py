@@ -26,6 +26,7 @@ class PatientDetailedResponse(BaseModel):
     patient_id: int
     name: str
     surname: str
+    pesel: str
     sex: Sex
     birth_date: date
     age: NonNegativeInt
@@ -36,6 +37,7 @@ class PatientPreviewResponse(BaseModel):
     patient_id: int
     name: str
     surname: str
+    pesel: str
     health_state: float
 
 

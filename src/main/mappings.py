@@ -24,6 +24,7 @@ def patient_model_to_detailed_response(model: Patient):
         patient_id=model.patient_id,
         name=model.name,
         surname=model.surname,
+        pesel=model.pesel,
         sex=Sex(model.sex),
         birth_date=model.birth_date,
         age=_calculate_age(model.birth_date),
@@ -35,6 +36,7 @@ def patient_model_to_preview_response(model: Patient):
     return PatientPreviewResponse(
         patient_id=model.patient_id,
         name=model.name,
+        pesel=model.pesel,
         surname=model.surname,
         health_state=random(),
     )

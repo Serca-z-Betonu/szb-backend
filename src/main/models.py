@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from sqlalchemy import DATE, Column, INTEGER, VARCHAR
-from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION, ENUM, TIMESTAMP
+from sqlalchemy.dialects.postgresql import CHAR, DOUBLE_PRECISION, ENUM, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 
 
@@ -35,5 +35,6 @@ class Patient(Base):
     patient_id: int = Column(INTEGER, primary_key=True)    # type: ignore
     name: str = Column(VARCHAR(64))                     # type: ignore
     surname: str = Column(VARCHAR(64))                  # type: ignore
+    pesel: str = Column(CHAR(11))                       # type: ignore
     sex = Column(sex_enum)                     # type: ignore
     birth_date: date = Column(DATE)                     # type: ignore
