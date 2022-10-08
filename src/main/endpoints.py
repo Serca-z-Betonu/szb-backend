@@ -33,8 +33,11 @@ def post_metric(
     requests: List[MetricRequest],
     metric_service: MetricService = Depends(Provide[Container.metric_service])
 ):
-    metric_service.create_metrics(patient_id=patient_id, requests=requests)
-    return MessageResponse(message="metric added")
+    try:
+        metric_service.create_metrics(patient_id=patient_id, requests=requests)
+        return MessageResponse(message="metric added")
+    except PatientNotFound as e:
+        return error_message_response(e, status.HTTP_404_NOT_FOUND)
 
 
 @router.get(

@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import select
 
 from sqlalchemy.orm.session import Session
+from sqlalchemy.exc import IntegrityError
 
 from .models import Metric, Patient
 
@@ -13,13 +14,16 @@ class MetricRepository:
         self._session_factory = session_factory
 
     def save_all(self, metrics: List[Metric]):
-        with self._new_session() as session:
-            for metric in metrics:
-                session.add(metric)
-            session.commit()
-            for metric in metrics:
-                session.refresh(metric)
-            return metrics
+        try:
+            with self._new_session() as session:
+                for metric in metrics:
+                    session.add(metric)
+                session.commit()
+                for metric in metrics:
+                    session.refresh(metric)
+                return metrics
+        except IntegrityError as e:
+            raise PatientNotFound(e.params["patient_id"]) from e
 
     def get_metrics_for_patient(
         self,
@@ -50,7 +54,8 @@ class PatientRepository:
     def get_by_id(self, patient_id: int):
         statement = select(Patient).where(Patient.patient_id == patient_id)
         with self._new_session() as session:
-            patient: Patient | None = session.execute(statement).scalars().first()
+            patient: Patient | None = session.execute(
+                statement).scalars().first()
             if patient:
                 return patient
             else:
@@ -59,7 +64,8 @@ class PatientRepository:
     def get_all(self):
         statement = select(Patient)
         with self._new_session() as session:
-            patients: List[Patient] = session.execute(statement).scalars().all()
+            patients: List[Patient] = session.execute(
+                statement).scalars().all()
             return patients
 
     def _new_session(self) -> Session:
