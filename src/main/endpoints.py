@@ -46,8 +46,8 @@ def post_metric(
 def read_metric_for_patient(
     patient_id: int,
     metric_type: MetricType,
-    start_timestamp: datetime,
-    end_timestamp: datetime,
+    start_timestamp: datetime | None = None,
+    end_timestamp: datetime | None = None,
     metric_service: MetricService = Depends(Provide[Container.metric_service])
 ):
     return metric_service.get_metrics_for_patient(

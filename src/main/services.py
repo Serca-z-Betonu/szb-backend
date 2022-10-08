@@ -1,9 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 
 from .mappings import metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response
 from .repositories import MetricRepository, PatientRepository
 from .schemas import MetricRequest, MetricType
+
+
+DEFAULT_METRICS_BUFFER = timedelta(days=7)
 
 
 class MetricService:
@@ -22,9 +25,13 @@ class MetricService:
             self,
             patient_id: int,
             metric_type: MetricType,
-            start_timestamp: datetime,
-            end_timestamp: datetime
+            start_timestamp: datetime | None,
+            end_timestamp: datetime | None,
     ):
+        if not end_timestamp:
+            end_timestamp = datetime.now()
+        if not start_timestamp:
+            start_timestamp = end_timestamp - DEFAULT_METRICS_BUFFER
         metrics = self._repository.get_metrics_for_patient(
             patient_id=patient_id,
             metric_type=metric_type.value,
