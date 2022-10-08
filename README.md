@@ -1,13 +1,13 @@
-# Python CRUD template
+# SzB e-health backend
 
-A simple CRUD template based on FastAPI and SQLAlchemy.
+Made using FastAPI + SQLAlchemy
 
 # Configuration
 
 Create a `.env` file:
 
 ```sh
-DATABASE__URL = "postgresql://postgres@localhost/notes"
+DATABASE__URL = "postgresql://postgres:password@localhost/ehealth"
 ```
 
 # Usage
@@ -15,5 +15,5 @@ DATABASE__URL = "postgresql://postgres@localhost/notes"
 To start the server run
 
 ```sh
-uvicorn src.main.main:app --reload
+uvicorn src.main.main:app
 ```
