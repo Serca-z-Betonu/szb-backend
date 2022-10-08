@@ -5,6 +5,7 @@ class DatabaseSettings(BaseModel):
     url: PostgresDsn
     echo: bool = False
     wipe: bool = False
+    insert_script: str | None = None
 
 
 class Settings(BaseSettings):

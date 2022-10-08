@@ -1,8 +1,9 @@
 from contextlib import contextmanager
+from io import FileIO, TextIOWrapper
 import logging
 from typing import Callable, Iterator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 from .models import Base
@@ -32,6 +33,11 @@ class Database:
         if wipe:
             Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
+
+    def insert_data(self, file: TextIOWrapper) -> None:
+        query = text(file.read())
+        with self._engine.connect() as con:
+            con.execute(query)
 
     @contextmanager
     def session(self) -> Iterator[Session]:
