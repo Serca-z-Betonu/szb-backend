@@ -1,18 +1,12 @@
-from typing import Any, Dict, List
+from typing import List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 
+from src.main.services import MetricService
+
 from .containers import Container
-from .repositories import DuplicateTitleError, NoteNotFoundError
-from .schemas import (
-    MessageResponse,
-    MetricRequest,
-    NoteRequest,
-    NoteResponse,
-    error_message_response,
-)
-from .services import MetricService, NoteService
+from .schemas import MessageResponse, MetricRequest
 
 
 router = APIRouter()
