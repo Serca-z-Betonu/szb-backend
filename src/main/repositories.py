@@ -1,5 +1,6 @@
 from typing import Callable, List
 from datetime import datetime
+from sqlalchemy import select
 
 from sqlalchemy.orm.session import Session
 
@@ -30,30 +31,19 @@ class PatientRepository:
         self._session_factory = session_factory
 
     def get_by_id(self, patient_id: int):
-        return Patient(
-            patient_id=patient_id,
-            name="Jakub",
-            surname="Kowieski",
-            sex="FEMALE",
-            birth_date=datetime.now().date()
-        )
+        statement = select(Patient).where(Patient.patient_id == patient_id)
+        with self._new_session() as session:
+            patient: Patient | None = session.execute(statement).scalars().first()
+            if patient:
+                return patient
+            else:
+                raise PatientNotFound(patient_id)
 
     def get_all(self):
-        return [
-            Patient(
-                patient_id=1,
-                name="Jakub",
-                surname="Kowieski",
-                sex="FEMALE",
-                birth_date=datetime.now().date()
-            ), Patient(
-                patient_id=2,
-                name="Pan",
-                surname="Policjant",
-                sex="FEMALE",
-                birth_date=datetime.now().date()
-            )
-        ]
+        statement = select(Patient)
+        with self._new_session() as session:
+            patients: List[Patient] = session.execute(statement).scalars().all()
+            return patients
 
     def _new_session(self) -> Session:
         return self._session_factory()
