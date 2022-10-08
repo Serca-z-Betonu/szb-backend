@@ -3,12 +3,12 @@ from typing import Any, Dict, List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
-from src.main.repositories import PatientNotFound
+from src.main.repositories import DrugNotFound, PatientNotFound
 
 from src.main.services import MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescriptionStatusResponse, error_message_response
+from .schemas import MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, error_message_response
 
 
 router = APIRouter()
@@ -113,3 +113,25 @@ def read_patient_prescriptions_valid_now(
         Depends(Provide[Container.prescription_service])
 ):
     return prescription_service.get_prescriptions_valid_now_for(patient_id)
+
+
+@router.post(
+    "/prescriptions",
+    status_code=status.HTTP_201_CREATED,
+    response_model=MessageResponse,
+)
+@inject
+def prescribe(
+    patient_id: int,
+    request: PrescribeRequest,
+    prescription_service: PrescriptionService =
+        Depends(Provide[Container.prescription_service])
+):
+    try:
+        prescription_service.prescribe(
+            patient_id=patient_id,
+            request=request
+        )
+        return MessageResponse(message="new prescription created")
+    except (PatientNotFound, DrugNotFound) as e:
+        return error_message_response(e, status.HTTP_404_NOT_FOUND)

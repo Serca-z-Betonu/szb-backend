@@ -2,7 +2,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import List
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, NonNegativeInt
+from pydantic import BaseModel, NonNegativeFloat, NonNegativeInt, PositiveFloat, PositiveInt
 
 
 class MetricType(Enum):
@@ -53,12 +53,11 @@ class PatientPreviewResponse(BaseModel):
 
 
 class PrescribeRequest(BaseModel):
-    patient_id: int
     drug_id: int
     start_date: date
     end_date: date
-    daily_dose_count: int
-    dose_size: int
+    dose_size: PositiveInt
+    daily_dose_count: PositiveInt
 
 
 class DrugUnit(Enum):
@@ -71,8 +70,8 @@ class PrescriptionStatusResponse(BaseModel):
     drug_id: int
     drug_name: str
     drug_unit: DrugUnit
-    average_actual_daily_dosage: float
-    expected_daily_dosage: float
+    average_actual_daily_dosage: NonNegativeFloat
+    expected_daily_dosage: PositiveFloat
 
 
 class MedicalEventType(Enum):
