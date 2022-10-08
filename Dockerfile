@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir --upgrade -r /requirements.txt
 
 COPY ./insert-data.sql /
 
-COPY ./src/main /src/main
+COPY ./src /src
 
 EXPOSE 8090
 
