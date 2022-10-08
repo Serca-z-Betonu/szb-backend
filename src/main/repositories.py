@@ -1,11 +1,12 @@
-from typing import Callable, List
-from datetime import datetime
+from typing import Callable, List, Tuple
+from datetime import date, datetime
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload, subqueryload
 
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import IntegrityError
 
-from .models import Metric, Patient
+from .models import Drug, Metric, Patient, Prescription, PrescriptionFulfillment
 
 
 class MetricRepository:
@@ -72,10 +73,44 @@ class PatientRepository:
         return self._session_factory()
 
 
+class DrugRepository:
+
+    def __init__(self, session_factory: Callable[..., Session]):
+        self._session_factory = session_factory
+
+    def get_by_id(self, drug_id: int):
+        statement = select(Drug).where(Drug.drug_id == drug_id)
+        with self._new_session() as session:
+            drug: Drug | None = session.execute(
+                statement).scalars().first()
+            if drug:
+                return drug
+            else:
+                raise DrugNotFound(drug_id)
+
+    def _new_session(self) -> Session:
+        return self._session_factory()
+
+
 class PrescriptionRepository:
 
     def __init__(self, session_factory: Callable[..., Session]):
         self._session_factory = session_factory
+
+    def get_for_patient(
+        self,
+        patient_id: int,
+        valid_at: date
+    ) -> List[Tuple[Prescription, Drug]]:
+        statement = select(Prescription, Drug).join(Drug).where(
+            Prescription.patient_id == patient_id,
+            Prescription.start_date <= valid_at,
+            Prescription.end_date >= valid_at
+        ).options(subqueryload(Prescription.fulfillments))
+        with self._new_session() as session:
+            result = session.execute(statement) \
+                .all()
+            return [tuple(row) for row in result]
 
     def _new_session(self) -> Session:
         return self._session_factory()
@@ -86,3 +121,10 @@ class PatientNotFound(RuntimeError):
     def __init__(self, patient_id: int) -> None:
         self.patient_id = patient_id
         super().__init__(f"Patient with id {patient_id} not found")
+
+
+class DrugNotFound(RuntimeError):
+
+    def __init__(self, drug_id: int) -> None:
+        self.drug_id = drug_id
+        super().__init__(f"Drug with id {drug_id} not found")

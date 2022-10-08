@@ -61,10 +61,16 @@ class PrescribeRequest(BaseModel):
     dose_size: int
 
 
+class DrugUnit(Enum):
+    MG = "MG"
+    ML = "ML"
+
+
 class PrescriptionStatusResponse(BaseModel):
     prescription_id: int
     drug_id: int
     drug_name: str
+    drug_unit: DrugUnit
     average_actual_daily_dosage: float
     expected_daily_dosage: float
 

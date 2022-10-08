@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from .mappings import metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response
-from .repositories import MetricRepository, PatientRepository, PrescriptionRepository
+from .mappings import metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescription_status_response
+from .repositories import DrugRepository, MetricRepository, PatientRepository, PrescriptionRepository
 from .schemas import MetricRequest, MetricType, PrescriptionStatusResponse
 
 
@@ -61,23 +61,15 @@ class PatientService:
 
 class PrescriptionService:
 
-    def __init__(self, prescription_repository: PrescriptionRepository):
+    def __init__(
+        self,
+        prescription_repository: PrescriptionRepository,
+    ):
         self._repository: PrescriptionRepository = prescription_repository
 
     def get_prescriptions_valid_now_for(self, patient_id: int):
-        return [
-            PrescriptionStatusResponse(
-                prescription_id=1,
-                drug_id=1,
-                drug_name="srakolin turbo forte",
-                average_actual_daily_dosage=2.44,
-                expected_daily_dosage=3,
-            ),
-            PrescriptionStatusResponse(
-                prescription_id=2,
-                drug_id=2,
-                drug_name="apap",
-                average_actual_daily_dosage=2.44,
-                expected_daily_dosage=3,
-            )
-        ]
+        pairs = self._repository.get_for_patient(
+            patient_id=patient_id,
+            valid_at=datetime.now().date()
+        )
+        return prescription_status_response(pairs, now=datetime.now())
