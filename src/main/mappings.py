@@ -48,10 +48,7 @@ def activity_request_to_model(
     )
 
 
-def activity_model_to_response(
-    model: Activity,
-    patient_id: int,
-) -> ActivityResponse:
+def activity_model_to_response(model: Activity) -> ActivityResponse:
     return ActivityResponse(
         duration_us=_total_microseconds(model.duration),
         end_timestamp=model.end_timestamp,

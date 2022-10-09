@@ -104,7 +104,7 @@ class ActivityService:
             start_timestamp=start_timestamp,
             end_timestamp=end_timestamp
         )
-        return [activity_model_to_response(activity, patient_id=patient_id)
+        return [activity_model_to_response(activity)
                 for activity in activities]
 
 class PatientService:
