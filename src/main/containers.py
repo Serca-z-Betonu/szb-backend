@@ -5,8 +5,8 @@ from dependency_injector.providers import Configuration, Factory, Singleton
 from src.main.prediction import Predictor
 
 from .database import Database
-from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
-from .services import DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
+from .repositories import ActivityRepository, DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
+from .services import ActivityService, DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
 from .settings import Settings
 
 
@@ -34,6 +34,16 @@ class Container(DeclarativeContainer):
     metric_service = Factory(
         MetricService,
         metric_repository=metric_repository,
+    )
+
+    activity_repository = Factory(
+        ActivityRepository,
+        session_factory=database.provided.session,
+    )
+
+    activity_service = Factory(
+        ActivityService,
+        activity_repository=activity_repository,
     )
 
     patient_repository = Factory(

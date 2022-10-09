@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import IntegrityError
 
-from .models import Base, Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
+from .models import Activity, Base, Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
 
 
 class Repository:
@@ -65,6 +65,34 @@ class MetricRepository(Repository):
                 )
             ).all()  # type: ignore
             return metrics
+
+
+class ActivityRepository(Repository):
+
+    def save(self, activity: Activity):
+        try:
+            with self._new_session() as session:
+                session.add(activity)
+                session.commit()
+                session.refresh(activity)
+                return activity
+        except IntegrityError as e:
+            raise PatientNotFound(e.params["patient_id"]) from e
+
+    def get_for_patient(
+        self,
+        patient_id: int,
+        start_timestamp: datetime,
+        end_timestamp: datetime
+    ):
+        statement = select(Activity).where(
+            Activity.patient_id == patient_id,
+            Activity.end_timestamp >= start_timestamp,
+            Activity.end_timestamp <= end_timestamp,
+        ).order_by(Activity.end_timestamp)
+        with self._new_session() as session:
+            activities: List[Activity] = session.execute(statement).scalars().all()
+            return activities
 
 
 class PatientRepository(Repository):

@@ -1,4 +1,4 @@
-truncate table patients, metrics, prescriptions, drugs, prescription_fulfillments, medical_events;
+truncate table patients, metrics, prescriptions, drugs, prescription_fulfillments, medical_events, activities;
 commit;
 
 insert into patients values(1, 'Jan', 'Kowalski', '76052302345', 'MALE', '1976-05-23');

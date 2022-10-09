@@ -1,12 +1,12 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from random import random
 from typing import Dict, List, Tuple
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
-from .models import Drug, MedicalEvent, Metric, Patient, Prescription
-from .schemas import DrugResponse, DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex, UpdatePrescriptionRequest
+from .models import Activity, Drug, MedicalEvent, Metric, Patient, Prescription
+from .schemas import ActivityRequest, ActivityResponse, DrugResponse, DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex, UpdatePrescriptionRequest
 
 
 def metric_request_to_model(
@@ -34,6 +34,33 @@ def metric_models_to_response(
         samples=[MetricSample(value=model.value, timestamp=model.timestamp) for
                  model in models]
     )
+
+
+def activity_request_to_model(
+        request: ActivityRequest,
+        patient_id: int,
+) -> Activity:
+    return Activity(
+        patient_id=patient_id,
+        duration=timedelta(microseconds=request.duration_us),
+        end_timestamp=request.end_timestamp,
+        description=request.description
+    )
+
+
+def activity_model_to_response(
+    model: Activity,
+    patient_id: int,
+) -> ActivityResponse:
+    return ActivityResponse(
+        duration_us=_total_microseconds(model.duration),
+        end_timestamp=model.end_timestamp,
+        description=model.description
+    )
+
+
+def _total_microseconds(tdelta: timedelta) -> int:
+    return int(tdelta.total_seconds()) * 1000000 + tdelta.microseconds
 
 
 def patient_model_to_detailed_response(

@@ -6,6 +6,8 @@ from src.main.models import Metric, Patient, PrescriptionFulfillment
 from src.main.prediction import Predictor
 
 from .mappings import (
+    activity_model_to_response,
+    activity_request_to_model,
     drug_model_to_response,
     medical_event_model_to_response,
     metric_models_to_response,
@@ -17,6 +19,7 @@ from .mappings import (
     prescription_status_response,
 )
 from .repositories import (
+    ActivityRepository,
     DrugRepository,
     MedicalHistoryRepository,
     MetricRepository,
@@ -24,6 +27,7 @@ from .repositories import (
     PrescriptionRepository,
 )
 from .schemas import (
+    ActivityRequest,
     MedicalEventResponse,
     MedicalEventType,
     MetricRequest,
@@ -35,7 +39,7 @@ from .schemas import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_METRICS_BUFFER = timedelta(days=7)
+DEFAULT_CHART_WINDOW = timedelta(days=7)
 
 
 class MetricService:
@@ -60,7 +64,7 @@ class MetricService:
         if not end_timestamp:
             end_timestamp = datetime.now()
         if not start_timestamp:
-            start_timestamp = end_timestamp - DEFAULT_METRICS_BUFFER
+            start_timestamp = end_timestamp - DEFAULT_CHART_WINDOW
         metrics = self._repository.get_metrics_for_patient(
             patient_id=patient_id,
             metric_type=metric_type.value,
@@ -72,6 +76,36 @@ class MetricService:
             expected_metric_type=metric_type,
         )
 
+
+class ActivityService:
+
+    def __init__(self, activity_repository: ActivityRepository):
+        self._repository: ActivityRepository = activity_repository
+
+    def create_activity(self, patient_id: int, request: ActivityRequest):
+        activity_model = activity_request_to_model(
+            request,
+            patient_id=patient_id
+        )
+        self._repository.save(activity_model)
+
+    def get_activities_for_patient(
+            self,
+            patient_id: int,
+            start_timestamp: datetime | None,
+            end_timestamp: datetime | None,
+    ):
+        if not end_timestamp:
+            end_timestamp = datetime.now()
+        if not start_timestamp:
+            start_timestamp = end_timestamp - DEFAULT_CHART_WINDOW
+        activities = self._repository.get_for_patient(
+            patient_id=patient_id,
+            start_timestamp=start_timestamp,
+            end_timestamp=end_timestamp
+        )
+        return [activity_model_to_response(activity, patient_id=patient_id)
+                for activity in activities]
 
 class PatientService:
 

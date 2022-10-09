@@ -32,6 +32,18 @@ class MetricResponse(BaseModel):
     samples: List[MetricSample]
 
 
+class ActivityRequest(BaseModel):
+    duration_us: NonNegativeInt
+    end_timestamp: datetime
+    description: str
+
+
+class ActivityResponse(BaseModel):
+    duration_us: NonNegativeInt
+    end_timestamp: datetime
+    description: str
+
+
 class Sex(Enum):
     MALE = "MALE"
     FEMALE = "FEMALE"

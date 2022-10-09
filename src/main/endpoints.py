@@ -5,10 +5,10 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 from src.main.repositories import DrugNotFound, PatientNotFound, PrescriptionExpired, PrescriptionNotFound
 
-from src.main.services import DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
+from src.main.services import ActivityService, DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import DrugResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, UpdatePrescriptionRequest, error_message_response
+from .schemas import ActivityRequest, ActivityResponse, DrugResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, UpdatePrescriptionRequest, error_message_response
 
 
 router = APIRouter()
@@ -55,6 +55,43 @@ def read_metric_for_patient(
     return metric_service.get_metrics_for_patient(
         patient_id=patient_id,
         metric_type=metric_type,
+        start_timestamp=start_timestamp,
+        end_timestamp=end_timestamp,
+    )
+
+
+@router.post(
+    "/activities",
+    status_code=status.HTTP_201_CREATED,
+    response_model=MessageResponse,
+    responses=PATIENT_NOT_FOUND_RESPONSE
+)
+@inject
+def post_activity(
+    patient_id: int,
+    request: ActivityRequest,
+    activity_service: ActivityService = Depends(Provide[Container.activity_service])
+):
+    try:
+        activity_service.create_activity(request=request, patient_id=patient_id)
+        return MessageResponse(message="activity added")
+    except PatientNotFound as e:
+        return error_message_response(e, status.HTTP_404_NOT_FOUND)
+
+
+@router.get(
+    "/activities",
+    response_model=List[ActivityResponse],
+)
+@inject
+def read_activities_for_patient(
+    patient_id: int,
+    start_timestamp: datetime | None = None,
+    end_timestamp: datetime | None = None,
+    activity_service: ActivityService = Depends(Provide[Container.activity_service])
+):
+    return activity_service.get_activities_for_patient(
+        patient_id=patient_id,
         start_timestamp=start_timestamp,
         end_timestamp=end_timestamp,
     )

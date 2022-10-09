@@ -2,8 +2,8 @@ from datetime import date, datetime, timedelta
 from typing import List
 from dateutil.relativedelta import relativedelta
 from keras.utils.generic_utils import default
-from sqlalchemy import DATE, TEXT, Column, INTEGER, VARCHAR, ForeignKey
-from sqlalchemy.dialects.postgresql import BOOLEAN, CHAR, DOUBLE_PRECISION, ENUM, TIMESTAMP
+from sqlalchemy import DATE, TEXT, TIME, Column, INTEGER, VARCHAR, ForeignKey
+from sqlalchemy.dialects.postgresql import BOOLEAN, CHAR, DOUBLE_PRECISION, ENUM, INTERVAL, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -35,6 +35,18 @@ class Metric(Base):
     metric_type: str = Column(metric_type_enum)         # type: ignore
     value: float = Column(DOUBLE_PRECISION)             # type: ignore
     timestamp: datetime = Column(TIMESTAMP)             # type: ignore
+
+
+class Activity(Base):
+    __tablename__ = "activities"
+    activity_id: int = Column(INTEGER, primary_key=True)  # type: ignore
+    patient_id: int = Column(                           # type: ignore
+        INTEGER,
+        ForeignKey("patients.patient_id")
+    )
+    duration: timedelta = Column(INTERVAL) # type: ignore
+    end_timestamp: datetime = Column(TIMESTAMP) # type: ignore
+    description: str = Column(TEXT) # type: ignore
 
 
 sex_enum = ENUM(
