@@ -35,3 +35,7 @@ docker compose down
 # GitHub workflow
 
 A workflow in this repository builds the Docker image of the API and pushes it to a [DockerHub repository](https://hub.docker.com/repository/docker/kklassa/szb-api).
+
+# Machine Learing model
+
+The machine learning model used by this application was developed in a [Google Colab Jupyter Notebook](https://colab.research.google.com/drive/1peSJ7CT16UPXhN15_otep4PuW20xZFtd?usp=sharing).
