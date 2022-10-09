@@ -31,3 +31,7 @@ To close it, open a new terminal and run:
 ```
 docker compose down
 ```
+
+# GitHub workflow
+
+A workflow in this repository builds the Docker image of the API and pushes it to a [DockerHub repository](https://hub.docker.com/repository/docker/kklassa/szb-api).
