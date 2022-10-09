@@ -12,9 +12,13 @@ Base = declarative_base()
 
 metric_type_enum = ENUM(
     "HEARTRATE",
+    "AFTER_ACTIVITY_HEARTRATE",
     "WEIGHT",
     "BLOOD_PRESSURE_MIN",
-    "BLOOC_PRESSURE_MAX",
+    "BLOOD_PRESSURE_MAX",
+    "CHEST_PAIN",
+    "CHOLESTEROL",
+    "REST_ECG",
     name="metric_type"
 )
 
@@ -26,7 +30,7 @@ class Metric(Base):
         INTEGER,
         ForeignKey("patients.patient_id")
     )
-    metric_type = Column(metric_type_enum)
+    metric_type: str = Column(metric_type_enum)         # type: ignore
     value: float = Column(DOUBLE_PRECISION)             # type: ignore
     timestamp: datetime = Column(TIMESTAMP)             # type: ignore
 

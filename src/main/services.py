@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import Dict, List
 
-from src.main.models import Patient, PrescriptionFulfillment
+from src.main.models import Metric, Patient, PrescriptionFulfillment
 from src.main.prediction import Predictor
 
 from .mappings import (
@@ -72,16 +72,26 @@ class MetricService:
 
 class PatientService:
 
+    DEFAULT_METRICS = {
+        "AFETR_ACTIVITY_HEARTRATE": 149,
+        "BLOOD_PRESSURE_MAX": 131,
+        "CHEST_PAIN": 2,
+        "CHOLESTEROL": 246,
+        "REST_ECG": 1,
+    }
+
     def __init__(
         self,
         patient_repository: PatientRepository,
-        predictor: Predictor
+        metric_repository: MetricRepository,
+        predictor: Predictor,
     ):
-        self._repository: PatientRepository = patient_repository
+        self._patient_repository: PatientRepository = patient_repository
+        self._metric_repository: MetricRepository = metric_repository
         self._predictor = predictor
 
     def get_patient_details_by_id(self, patient_id: int):
-        patient_model = self._repository.get_by_id(patient_id)
+        patient_model = self._patient_repository.get_by_id(patient_id)
         health_state = self._predict_health_state(patient_model)
         return patient_model_to_detailed_response(
             model=patient_model,
@@ -89,7 +99,7 @@ class PatientService:
         )
 
     def get_all_patients_preview_info(self):
-        patient_models = self._repository.get_all()
+        patient_models = self._patient_repository.get_all()
         health_states = {
             patient: self._predict_health_state(patient) for
             patient in patient_models
@@ -102,10 +112,22 @@ class PatientService:
         ]
 
     def _predict_health_state(self, patient: Patient) -> float:
+        latest_metrics = self._metric_repository.get_last_metrics_for_patient(
+            patient.patient_id)
+        metric_map: Dict[str, float] = {
+            metric.metric_type: metric.value for
+            metric in latest_metrics
+        }
+        metric_map = PatientService.DEFAULT_METRICS | metric_map
         features = prediction_features(
-            patient=patient
+            patient=patient,
+            chest_pain=metric_map["CHEST_PAIN"],
+            rest_blood_pressure=metric_map["BLOOD_PRESSURE_MAX"],
+            cholesterol=metric_map["CHOLESTEROL"],
+            rest_ecg=metric_map["REST_ECG"],
+            heartrate_after_activity=metric_map["AFETR_ACTIVITY_HEARTRATE"],
         )
-        return self._predictor.predict(features)
+        return self._predictor.predict_health_state(features)
 
 
 class DrugService:

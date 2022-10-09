@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from random import random
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
@@ -107,13 +107,20 @@ def medical_event_model_to_response(model: MedicalEvent):
         timestamp=model.timestamp
     )
 
-def prediction_features(patient: Patient):
+def prediction_features(
+    patient: Patient,
+    chest_pain: float,
+    rest_blood_pressure: float,
+    cholesterol: float,
+    rest_ecg: float,
+    heartrate_after_activity: float,
+):
     return np.array([
-        patient.age, # age
-        1 if patient.sex == Sex.MALE else 0, # sex
-        1, # chest pain
-        120, # rest blood pressure
-        250, # cholesterol
-        1, # rest ecg
-        150 # max heartrate
+        patient.age,
+        1 if patient.sex == Sex.MALE else 0,
+        chest_pain,
+        rest_blood_pressure,
+        cholesterol,
+        rest_ecg,
+        heartrate_after_activity
     ])

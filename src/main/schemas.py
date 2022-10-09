@@ -7,9 +7,13 @@ from pydantic import BaseModel, NonNegativeFloat, NonNegativeInt, PositiveFloat,
 
 class MetricType(Enum):
     HEARTRATE = "HEARTRATE"
+    AFTER_ACTIVITY_HEARTRATE = "AFTER_ACTIVITY_HEARTRATE"
     WEIGHT = "WEIGHT"
     BLOOD_PRESSURE_MIN = "BLOOD_PRESSURE_MIN"
     BLOOD_PRESSURE_MAX = "BLOOD_PRESSURE_MAX"
+    CHEST_PAIN = "CHEST_PAIN"
+    CHOLESTEROL = "CHOLESTEROL"
+    REST_ECG = "REST_ECG"
 
 
 class MetricRequest(BaseModel):

@@ -44,6 +44,7 @@ class Container(DeclarativeContainer):
     patient_service = Factory(
         PatientService,
         patient_repository=patient_repository,
+        metric_repository=metric_repository,
         predictor=predictor,
     )
 

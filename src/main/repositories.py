@@ -1,6 +1,6 @@
 from typing import Callable, List, Tuple, Type
 from datetime import date, datetime
-from sqlalchemy import select
+from sqlalchemy import and_, func, select
 from sqlalchemy.orm import joinedload, subqueryload
 
 from sqlalchemy.orm.session import Session
@@ -47,6 +47,21 @@ class MetricRepository(Repository):
         ).order_by(Metric.timestamp)
         with self._new_session() as session:
             metrics: List[Metric] = session.execute(statement).scalars().all()
+            return metrics
+
+    def get_last_metrics_for_patient(self, patient_id: int) -> List[Metric]:
+        with self._new_session() as session:
+            subquery = session.query(
+                Metric.metric_type, # type: ignore
+                func.max(Metric.timestamp).label("latest_timestamp")
+            ).group_by(Metric.metric_type).subquery('t2')
+            metrics: List[Metric] = session.query(Metric).join(
+                subquery,
+                and_(
+                    Metric.metric_type == subquery.c.metric_type,
+                    Metric.timestamp == subquery.c.latest_timestamp
+                )
+            ).all() # type: ignore
             return metrics
 
 

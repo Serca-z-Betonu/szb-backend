@@ -11,6 +11,6 @@ class Predictor:
     def __init__(self) -> None:
         self._model: Any = tf.keras.models.load_model(PATH_TO_MODEL)
 
-    def predict(self, features: np.ndarray) -> float:
+    def predict_health_state(self, features: np.ndarray) -> float:
         preds = self._model.predict(features.reshape(1, -1))
-        return float(np.argmax(preds))
+        return 1 - float(np.argmax(preds))
