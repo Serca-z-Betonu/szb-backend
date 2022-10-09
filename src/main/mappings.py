@@ -2,6 +2,7 @@ from datetime import date, datetime
 from random import random
 from typing import List, Tuple
 
+import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from .models import Drug, MedicalEvent, Metric, Patient, Prescription
@@ -35,7 +36,10 @@ def metric_models_to_response(
     )
 
 
-def patient_model_to_detailed_response(model: Patient):
+def patient_model_to_detailed_response(
+    model: Patient,
+    health_state: float
+):
     return PatientDetailedResponse(
         patient_id=model.patient_id,
         name=model.name,
@@ -43,26 +47,23 @@ def patient_model_to_detailed_response(model: Patient):
         pesel=model.pesel,
         sex=Sex(model.sex),
         birth_date=model.birth_date,
-        age=_calculate_age(model.birth_date),
-        health_state=random(),
+        age=model.age,
+        health_state=health_state,
     )
 
 
-def patient_model_to_preview_response(model: Patient):
+def patient_model_to_preview_response(
+    model: Patient,
+    health_state: float
+):
     return PatientPreviewResponse(
         patient_id=model.patient_id,
         name=model.name,
         sex=Sex(model.sex),
         pesel=model.pesel,
         surname=model.surname,
-        health_state=random(),
+        health_state=health_state,
     )
-
-
-def _calculate_age(birth_date: date):
-    now_date = datetime.now().date()
-    now_date = datetime.now().date()
-    return relativedelta(now_date, birth_date).years
 
 
 def drug_model_to_response(model: Drug):
@@ -82,22 +83,11 @@ def prescription_status_response(
         drug_id=drug.drug_id,
         drug_name=drug.name,
         drug_unit=DrugUnit(drug.unit),
-        average_actual_daily_dosage=_average_actual_daily_dosage(
-            prescription=prescription,
-            now=now),
-        expected_daily_dosage=_expected_daily_dosage(prescription),
+        average_actual_daily_dosage=prescription.average_actual_daily_dosage,
+        expected_daily_dosage=prescription.expected_daily_dosage,
         expires_at=prescription.start_date,
     ) for (prescription, drug) in pairs]
 
-
-def _average_actual_daily_dosage(prescription: Prescription, now: datetime):
-    days_since_start = relativedelta(now.date(),
-                                     prescription.start_date).days
-    taken_count: int = len(prescription.fulfillments)
-    return float(taken_count) * prescription.dose_size / days_since_start
-
-def _expected_daily_dosage(prescription: Prescription):
-    return prescription.daily_dose_count * prescription.dose_size
 
 def prescribe_request_to_model(request: PrescribeRequest, patient_id: int):
     return Prescription(
@@ -116,3 +106,14 @@ def medical_event_model_to_response(model: MedicalEvent):
         description=model.description,
         timestamp=model.timestamp
     )
+
+def prediction_features(patient: Patient):
+    return np.array([
+        patient.age, # age
+        1 if patient.sex == Sex.MALE else 0, # sex
+        1, # chest pain
+        120, # rest blood pressure
+        250, # cholesterol
+        1, # rest ecg
+        150 # max heartrate
+    ])

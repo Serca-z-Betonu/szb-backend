@@ -9,8 +9,7 @@ class MetricType(Enum):
     HEARTRATE = "HEARTRATE"
     WEIGHT = "WEIGHT"
     BLOOD_PRESSURE_MIN = "BLOOD_PRESSURE_MIN"
-    # TODO: fix
-    BLOOD_PRESSURE_MAX = "BLOOC_PRESSURE_MAX"
+    BLOOD_PRESSURE_MAX = "BLOOD_PRESSURE_MAX"
 
 
 class MetricRequest(BaseModel):

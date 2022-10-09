@@ -2,6 +2,8 @@ from dependency_injector.containers import (
     DeclarativeContainer, WiringConfiguration)
 from dependency_injector.providers import Configuration, Factory, Singleton
 
+from src.main.prediction import Predictor
+
 from .database import Database
 from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
 from .services import DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
@@ -22,6 +24,8 @@ class Container(DeclarativeContainer):
         echo=config.database.echo
     )
 
+    predictor = Singleton(Predictor)
+
     metric_repository = Factory(
         MetricRepository,
         session_factory=database.provided.session,
@@ -40,6 +44,7 @@ class Container(DeclarativeContainer):
     patient_service = Factory(
         PatientService,
         patient_repository=patient_repository,
+        predictor=predictor,
     )
 
     drug_repository = Factory(

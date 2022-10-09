@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from typing import List
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import DATE, TEXT, Column, INTEGER, VARCHAR, ForeignKey
 from sqlalchemy.dialects.postgresql import CHAR, DOUBLE_PRECISION, ENUM, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
@@ -46,6 +47,11 @@ class Patient(Base):
     sex = Column(sex_enum)                     # type: ignore
     birth_date: date = Column(DATE)                     # type: ignore
 
+    @property
+    def age(self):
+        now_date = datetime.now().date()
+        return relativedelta(now_date, self.birth_date).years
+
 
 class PrescriptionFulfillment(Base):
     __tablename__ = "prescription_fulfillments"
@@ -69,6 +75,17 @@ class Prescription(Base):
     dose_size: int = Column(INTEGER)  # type: ignore
     daily_dose_count: int = Column(INTEGER)  # type: ignore
     fulfillments = relationship("PrescriptionFulfillment")
+
+    @property
+    def average_actual_daily_dosage(self):
+        now_date = datetime.now().date()
+        days_since_start = relativedelta(now_date, self.start_date).days
+        taken_count: int = len(self.fulfillments)
+        return float(taken_count) * self.dose_size / days_since_start
+
+    @property
+    def expected_daily_dosage(self):
+        return self.daily_dose_count * self.dose_size
 
 
 drug_unit_enum = ENUM(

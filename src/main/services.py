@@ -1,11 +1,35 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from src.main.models import PrescriptionFulfillment
+from src.main.models import Patient, PrescriptionFulfillment
+from src.main.prediction import Predictor
 
-from .mappings import drug_model_to_response, medical_event_model_to_response, metric_models_to_response, metric_request_to_model, patient_model_to_detailed_response, patient_model_to_preview_response, prescribe_request_to_model, prescription_status_response
-from .repositories import DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
-from .schemas import MedicalEventResponse, MedicalEventType, MetricRequest, MetricType, PrescribeRequest, PrescriptionStatusResponse
+from .mappings import (
+    drug_model_to_response,
+    medical_event_model_to_response,
+    metric_models_to_response,
+    metric_request_to_model,
+    patient_model_to_detailed_response,
+    patient_model_to_preview_response,
+    prediction_features,
+    prescribe_request_to_model,
+    prescription_status_response,
+)
+from .repositories import (
+    DrugRepository,
+    MedicalHistoryRepository,
+    MetricRepository,
+    PatientRepository,
+    PrescriptionRepository,
+)
+from .schemas import (
+    MedicalEventResponse,
+    MedicalEventType,
+    MetricRequest,
+    MetricType,
+    PrescribeRequest,
+    PrescriptionStatusResponse,
+)
 
 
 DEFAULT_METRICS_BUFFER = timedelta(days=7)
@@ -48,17 +72,40 @@ class MetricService:
 
 class PatientService:
 
-    def __init__(self, patient_repository: PatientRepository):
+    def __init__(
+        self,
+        patient_repository: PatientRepository,
+        predictor: Predictor
+    ):
         self._repository: PatientRepository = patient_repository
+        self._predictor = predictor
 
     def get_patient_details_by_id(self, patient_id: int):
         patient_model = self._repository.get_by_id(patient_id)
-        return patient_model_to_detailed_response(patient_model)
+        health_state = self._predict_health_state(patient_model)
+        return patient_model_to_detailed_response(
+            model=patient_model,
+            health_state=health_state
+        )
 
     def get_all_patients_preview_info(self):
         patient_models = self._repository.get_all()
-        return [patient_model_to_preview_response(patient_model) for
-                patient_model in patient_models]
+        health_states = {
+            patient: self._predict_health_state(patient) for
+            patient in patient_models
+        }
+        return [
+            patient_model_to_preview_response(
+                model=patient,
+                health_state=health_states[patient]
+            ) for patient in patient_models
+        ]
+
+    def _predict_health_state(self, patient: Patient) -> float:
+        features = prediction_features(
+            patient=patient
+        )
+        return self._predictor.predict(features)
 
 
 class DrugService:
@@ -70,6 +117,7 @@ class DrugService:
         drug_models = self._repository.get_all()
         return [drug_model_to_response(drug_model) for
                 drug_model in drug_models]
+
 
 class PrescriptionService:
 
