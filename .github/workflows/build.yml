@@ -37,4 +37,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: kklassa/szb-api:${{ steps.eval.outputs.tag }}
+          tags: kklassa/szb-api:alpha-${{ steps.eval.outputs.tag }}
