@@ -266,7 +266,7 @@ def get_medical_alerts_for_patient(
     response_model=List[MedicalAlertResponse]
 )
 @inject
-def get_medical_alerts_for_patient(
+def read_medical_alerts_for_patient(
     patient_id: int,
     medical_alert_service: MedicalAlertService = Depends(Provide[Container.medical_alert_service])
 ):
