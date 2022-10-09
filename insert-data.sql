@@ -676,6 +676,16 @@ insert into metrics (patient_id, metric_type, value, timestamp)
   values(3, 'REST_ECG', 3, '2022-10-07T21:00:00Z');
 commit;
 
+insert into activities (patient_id, duration, end_timestamp, description)
+  values(3, '00:13:22', '2022-10-07T21:00:00Z', 'Bieganie');
+insert into activities (patient_id, duration, end_timestamp, description)
+  values(3, '02:10:43', '2022-10-03T15:00:00Z', 'Rower');
+insert into activities (patient_id, duration, end_timestamp, description)
+  values(3, '01:04:13', '2022-10-06T17:00:00Z', 'Pływanie');
+insert into activities (patient_id, duration, end_timestamp, description)
+  values(3, '10:12:33', '2022-10-04T20:00:00Z', 'Wycieczka w góry');
+commit;
+
 insert into drugs values(1, 'Ibum', 'MG');
 insert into drugs values(2, 'Marsjanki', 'MG');
 insert into drugs values(3, 'Apap', 'MG');
