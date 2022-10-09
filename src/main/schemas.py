@@ -1,8 +1,8 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import List
+from typing import Any, Dict, List
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, NonNegativeFloat, NonNegativeInt, PositiveFloat, PositiveInt
+from pydantic import BaseModel, NonNegativeFloat, NonNegativeInt, PositiveFloat, PositiveInt, root_validator, validator
 
 
 class MetricType(Enum):
@@ -74,6 +74,33 @@ class PrescribeRequest(BaseModel):
     end_date: date
     dose_size: PositiveInt
     daily_dose_count: PositiveInt
+
+    @validator("end_date")
+    def end_date_cant_be_ealier_than_today(cls, v: date):
+        if datetime.now().date() > v:
+            raise ValueError("cant be ealier than today")
+        return v
+
+
+class UpdatePrescriptionRequest(BaseModel):
+    drug_id: int | None
+    end_date: date | None
+    dose_size: PositiveInt | None
+    daily_dose_count: PositiveInt | None
+
+    @validator("end_date")
+    def end_date_cant_be_ealier_than_today(cls, v: date | None):
+        if v is None:
+            return
+        if datetime.now().date() > v:
+            raise ValueError("cant be ealier than today")
+        return v
+
+    @root_validator()
+    def something_must_change(cls, values_dict: Dict[str, Any]):
+        if all(value is None for value in values_dict.values()):
+            raise ValueError("nothing changed")
+        return values_dict
 
 
 class PrescriptionStatusResponse(BaseModel):

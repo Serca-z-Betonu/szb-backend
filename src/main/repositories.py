@@ -1,5 +1,5 @@
 from typing import Callable, List, Tuple, Type
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from sqlalchemy import and_, func, select
 from sqlalchemy.orm import joinedload, subqueryload
 
@@ -52,7 +52,7 @@ class MetricRepository(Repository):
     def get_last_metrics_for_patient(self, patient_id: int) -> List[Metric]:
         with self._new_session() as session:
             subquery = session.query(
-                Metric.metric_type, # type: ignore
+                Metric.metric_type,  # type: ignore
                 func.max(Metric.timestamp).label("latest_timestamp")
             ).group_by(Metric.metric_type).subquery('t2')
             metrics: List[Metric] = session.query(Metric).join(
@@ -61,7 +61,7 @@ class MetricRepository(Repository):
                     Metric.metric_type == subquery.c.metric_type,
                     Metric.timestamp == subquery.c.latest_timestamp
                 )
-            ).all() # type: ignore
+            ).all()  # type: ignore
             return metrics
 
 
@@ -103,6 +103,7 @@ class PrescriptionRepository(Repository):
     ) -> List[Tuple[Prescription, Drug]]:
         statement = select(Prescription, Drug).join(Drug).where(
             Prescription.patient_id == patient_id,
+            Prescription.expired == False,
             Prescription.start_date <= valid_at,
             Prescription.end_date >= valid_at
         ).options(subqueryload(Prescription.fulfillments))
@@ -122,6 +123,50 @@ class PrescriptionRepository(Repository):
             if is_foreign_key_violation(e, of_table=Patient):
                 raise PatientNotFound(e.params["patient_id"]) from e
             elif is_foreign_key_violation(e, of_table=Drug):
+                raise DrugNotFound(e.params["drug_id"]) from e
+            raise
+
+    def update_by_replacement(
+        self,
+        prescription_id: int,
+        drug_id: int | None,
+        dose_size: int | None,
+        daily_dose_count: int | None,
+        end_date: date | None,
+    ):
+        try:
+            statement = select(Prescription) \
+                .where(Prescription.prescription_id == prescription_id)
+            today = datetime.now().date()
+            yesterday = today - timedelta(days=1)
+            with self._new_session() as session:
+                previous: Prescription | None = session.execute(statement) \
+                    .scalar()
+                if not previous:
+                    raise PrescriptionNotFound(prescription_id)
+                elif not previous.is_valid_now():
+                    raise PrescriptionExpired(prescription_id)
+
+
+                current = Prescription(
+                    patient_id=previous.patient_id,
+                    drug_id=drug_id if drug_id else previous.drug_id,
+                    dose_size=dose_size if dose_size else previous.dose_size,
+                    daily_dose_count=daily_dose_count if daily_dose_count
+                        else previous.daily_dose_count,
+                    start_date=today,
+                    end_date=end_date if end_date else previous.end_date,
+                )
+
+                previous.expired = True
+
+                session.merge(previous)
+                session.add(current)
+                session.commit()
+                session.refresh(current)
+                return (previous, current)
+        except IntegrityError as e:
+            if is_foreign_key_violation(e, of_table=Drug):
                 raise DrugNotFound(e.params["drug_id"]) from e
             raise
 
@@ -156,21 +201,30 @@ class PatientNotFound(RuntimeError):
 
     def __init__(self, patient_id: int) -> None:
         self.patient_id = patient_id
-        super().__init__(f"Patient with id {patient_id} not found")
+        super().__init__(f"patient with id {patient_id} not found")
 
 
 class DrugNotFound(RuntimeError):
 
     def __init__(self, drug_id: int) -> None:
         self.drug_id = drug_id
-        super().__init__(f"Drug with id {drug_id} not found")
+        super().__init__(f"drug with id {drug_id} not found")
 
 
 class PrescriptionNotFound(RuntimeError):
 
     def __init__(self, prescription_id: int) -> None:
-        self.drug_id = prescription_id
-        super().__init__(f"Prescription with id {prescription_id} not found")
+        self.prescription_id = prescription_id
+        super().__init__(f"prescription with id {prescription_id} not found")
+
+
+class PrescriptionExpired(RuntimeError):
+
+    def __init__(self, prescription_id: int) -> None:
+        self.prescription_id = prescription_id
+        super().__init__(
+            f"prescription with id {prescription_id} already expired"
+        )
 
 
 def is_foreign_key_violation(error: IntegrityError, of_table: Type[Base]):

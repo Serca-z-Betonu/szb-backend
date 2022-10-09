@@ -6,7 +6,7 @@ import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from .models import Drug, MedicalEvent, Metric, Patient, Prescription
-from .schemas import DrugResponse, DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex
+from .schemas import DrugResponse, DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex, UpdatePrescriptionRequest
 
 
 def metric_request_to_model(

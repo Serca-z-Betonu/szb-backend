@@ -3,12 +3,12 @@ from typing import Any, Dict, List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
-from src.main.repositories import DrugNotFound, PatientNotFound, PrescriptionNotFound
+from src.main.repositories import DrugNotFound, PatientNotFound, PrescriptionExpired, PrescriptionNotFound
 
 from src.main.services import DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import DrugResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, error_message_response
+from .schemas import DrugResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, UpdatePrescriptionRequest, error_message_response
 
 
 router = APIRouter()
@@ -132,6 +132,29 @@ def prescribe(
         return MessageResponse(message="new prescription created")
     except (PatientNotFound, DrugNotFound) as e:
         return error_message_response(e, status.HTTP_404_NOT_FOUND)
+
+
+@router.post(
+    "/prescriptions/update",
+    response_model=MessageResponse,
+)
+@inject
+def update_prescription(
+    prescription_id: int,
+    request: UpdatePrescriptionRequest,
+    prescription_service: PrescriptionService =
+        Depends(Provide[Container.prescription_service])
+):
+    try:
+        prescription_service.update_prescription(
+            request=request,
+            prescription_id=prescription_id,
+        )
+        return MessageResponse(message="prescription updated")
+    except (PrescriptionNotFound, DrugNotFound) as e:
+        return error_message_response(e, status.HTTP_404_NOT_FOUND)
+    except (PrescriptionExpired) as e:
+        return error_message_response(e, status.HTTP_400_BAD_REQUEST)
 
 
 @router.post(

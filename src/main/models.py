@@ -1,10 +1,12 @@
 from datetime import date, datetime, timedelta
 from typing import List
 from dateutil.relativedelta import relativedelta
+from keras.utils.generic_utils import default
 from sqlalchemy import DATE, TEXT, Column, INTEGER, VARCHAR, ForeignKey
-from sqlalchemy.dialects.postgresql import CHAR, DOUBLE_PRECISION, ENUM, TIMESTAMP
+from sqlalchemy.dialects.postgresql import BOOLEAN, CHAR, DOUBLE_PRECISION, ENUM, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 
 Base = declarative_base()
@@ -78,12 +80,20 @@ class Prescription(Base):
     end_date: date = Column(DATE)  # type: ignore
     dose_size: int = Column(INTEGER)  # type: ignore
     daily_dose_count: int = Column(INTEGER)  # type: ignore
+    expired: bool = Column(BOOLEAN, server_default=expression.false())  # type: ignore
     fulfillments = relationship("PrescriptionFulfillment")
+
+    def is_valid_now(self) -> bool:
+        return not self.expired and \
+            date.today() <= self.end_date and \
+            date.today() >= self.start_date
 
     @property
     def average_actual_daily_dosage(self):
         now_date = datetime.now().date()
         days_since_start = relativedelta(now_date, self.start_date).days
+        if days_since_start == 0:
+            return 0
         taken_count: int = len(self.fulfillments)
         return float(taken_count) * self.dose_size / days_since_start
 
@@ -115,12 +125,12 @@ medical_event_type_enum = ENUM(
 
 class MedicalEvent(Base):
     __tablename__ = "medical_events"
-    medical_event_id: int = Column(INTEGER, primary_key=True) # type: ignore
+    medical_event_id: int = Column(INTEGER, primary_key=True)  # type: ignore
     patient_id: int = Column(  # type: ignore
         INTEGER,
         ForeignKey("patients.patient_id")
     )
     medical_event_type = Column(medical_event_type_enum)
-    summary: str = Column(VARCHAR(128)) # type: ignore
-    description: str = Column(TEXT) # type: ignore
-    timestamp: datetime = Column(TIMESTAMP) # type: ignore
+    summary: str = Column(VARCHAR(128))  # type: ignore
+    description: str = Column(TEXT)  # type: ignore
+    timestamp: datetime = Column(TIMESTAMP)  # type: ignore

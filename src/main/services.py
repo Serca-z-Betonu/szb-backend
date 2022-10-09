@@ -30,6 +30,7 @@ from .schemas import (
     MetricType,
     PrescribeRequest,
     PrescriptionStatusResponse,
+    UpdatePrescriptionRequest,
 )
 
 logger = logging.getLogger(__name__)
@@ -163,6 +164,19 @@ class PrescriptionService:
             patient_id=patient_id
         )
         self._repository.save(prescription_model)
+
+    def update_prescription(
+        self,
+        prescription_id: int,
+        request: UpdatePrescriptionRequest
+    ):
+        self._repository.update_by_replacement(
+            prescription_id=prescription_id,
+            drug_id=request.drug_id,
+            dose_size=request.dose_size,
+            daily_dose_count=request.daily_dose_count,
+            end_date=request.end_date,
+        )
 
     def fulfill(self, prescription_id: int, timestamp: datetime | None):
         if not timestamp:
