@@ -49,6 +49,7 @@ class PatientPreviewResponse(BaseModel):
     patient_id: int
     name: str
     surname: str
+    sex: Sex
     pesel: str
     health_state: float
 

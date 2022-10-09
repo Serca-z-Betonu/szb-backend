@@ -52,6 +52,7 @@ def patient_model_to_preview_response(model: Patient):
     return PatientPreviewResponse(
         patient_id=model.patient_id,
         name=model.name,
+        sex=Sex(model.sex),
         pesel=model.pesel,
         surname=model.surname,
         health_state=random(),
