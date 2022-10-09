@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import logging
 from typing import Dict, List
 
 from src.main.models import Metric, Patient, PrescriptionFulfillment
@@ -31,6 +32,7 @@ from .schemas import (
     PrescriptionStatusResponse,
 )
 
+logger = logging.getLogger(__name__)
 
 DEFAULT_METRICS_BUFFER = timedelta(days=7)
 
@@ -127,6 +129,8 @@ class PatientService:
             rest_ecg=metric_map["REST_ECG"],
             heartrate_after_activity=metric_map["AFETR_ACTIVITY_HEARTRATE"],
         )
+        logger.info("Predicting using %s", metric_map |
+                    {"age": patient.age, "sex": patient.sex})
         return self._predictor.predict_health_state(features)
 
 
