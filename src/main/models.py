@@ -146,3 +146,13 @@ class MedicalEvent(Base):
     summary: str = Column(VARCHAR(128))  # type: ignore
     description: str = Column(TEXT)  # type: ignore
     timestamp: datetime = Column(TIMESTAMP)  # type: ignore
+
+
+class MedicalAlert(Base):
+    __tablename__ = "medical_alerts"
+    medical_alert_id: int = Column(INTEGER, primary_key=True)  # type: ignore
+    patient_id: int = Column(                           # type: ignore
+        INTEGER,
+        ForeignKey("patients.patient_id")
+    )
+    message: str = Column(TEXT) # type: ignore

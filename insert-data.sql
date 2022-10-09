@@ -1,4 +1,4 @@
-truncate table patients, metrics, prescriptions, drugs, prescription_fulfillments, medical_events, activities;
+truncate table patients, metrics, prescriptions, drugs, prescription_fulfillments, medical_events, activities, medical_alerts;
 commit;
 
 insert into patients values(1, 'Jan', 'Kowalski', '76052302345', 'MALE', '1976-05-23');
@@ -804,4 +804,7 @@ insert into medical_events(patient_id, medical_event_type, summary, description,
   values(3, 'ADVISE', 'Bezsenność', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
     Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
     '2015-01-22T12:13:43Z');
+commit;
+
+insert into medical_alerts(patient_id, message) values(3, 'Proszę pilnie o umówienie wizyty.');
 commit;

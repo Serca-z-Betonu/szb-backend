@@ -5,8 +5,8 @@ from dependency_injector.providers import Configuration, Factory, Singleton
 from src.main.prediction import Predictor
 
 from .database import Database
-from .repositories import ActivityRepository, DrugRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
-from .services import ActivityService, DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
+from .repositories import ActivityRepository, DrugRepository, MedicalAlertRepository, MedicalHistoryRepository, MetricRepository, PatientRepository, PrescriptionRepository
+from .services import ActivityService, DrugService, MedicalAlertService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
 from .settings import Settings
 
 
@@ -86,4 +86,14 @@ class Container(DeclarativeContainer):
     medical_history_service = Factory(
         MedicalHistoryService,
         medical_history_repository=medical_history_repository,
+    )
+
+    medical_alert_repository = Factory(
+        MedicalAlertRepository,
+        session_factory=database.provided.session,
+    )
+
+    medical_alert_service = Factory(
+        MedicalAlertService,
+        medical_alert_repository=medical_alert_repository,
     )

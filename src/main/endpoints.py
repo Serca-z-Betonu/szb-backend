@@ -5,10 +5,10 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 from src.main.repositories import DrugNotFound, PatientNotFound, PrescriptionExpired, PrescriptionNotFound
 
-from src.main.services import ActivityService, DrugService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
+from src.main.services import ActivityService, DrugService, MedicalAlertService, MedicalHistoryService, MetricService, PatientService, PrescriptionService
 
 from .containers import Container
-from .schemas import ActivityRequest, ActivityResponse, DrugResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, UpdatePrescriptionRequest, error_message_response
+from .schemas import ActivityRequest, ActivityResponse, DrugResponse, MedicalAlertRequest, MedicalAlertResponse, MedicalEventResponse, MessageResponse, MetricRequest, MetricResponse, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, UpdatePrescriptionRequest, error_message_response
 
 
 router = APIRouter()
@@ -226,3 +226,36 @@ def read_patients_medical_history(
         Depends(Provide[Container.medical_history_service])
 ):
     return medical_history_service.get_patients_medical_history(patient_id)
+
+
+@router.post(
+    "/medical-alerts",
+    response_model=MessageResponse,
+    responses=PATIENT_NOT_FOUND_RESPONSE
+)
+@inject
+def create_medical_alert(
+    patient_id: int,
+    request: MedicalAlertRequest,
+    medical_alert_service: MedicalAlertService = Depends(Provide[Container.medical_alert_service])
+):
+    try:
+        medical_alert_service.create_medical_alert(
+            patient_id=patient_id,
+            request=request
+        )
+        return MessageResponse(message="medical alert added")
+    except PatientNotFound as e:
+        return error_message_response(e, status.HTTP_404_NOT_FOUND)
+
+
+@router.get(
+    "/medical-alerts",
+    response_model=List[MedicalAlertResponse]
+)
+@inject
+def real_medical_alerts_for_patient(
+    patient_id: int,
+    medical_alert_service: MedicalAlertService = Depends(Provide[Container.medical_alert_service])
+):
+    return medical_alert_service.get_alerts_for_patient(patient_id=patient_id)

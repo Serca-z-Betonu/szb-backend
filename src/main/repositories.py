@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import IntegrityError
 
-from .models import Activity, Base, Drug, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
+from .models import Activity, Base, Drug, MedicalAlert, MedicalEvent, Metric, Patient, Prescription, PrescriptionFulfillment
 
 
 class Repository:
@@ -225,6 +225,27 @@ class MedicalHistoryRepository(Repository):
             medical_events: List[MedicalEvent] = session.execute(statement) \
                 .scalars().all()
             return medical_events
+
+
+class MedicalAlertRepository(Repository):
+
+    def save(self, alert: MedicalAlert):
+        try:
+            with self._new_session() as session:
+                session.add(alert)
+                session.commit()
+                session.refresh(alert)
+                return alert
+        except IntegrityError as e:
+            if is_foreign_key_violation(e, of_table=Patient):
+                raise PatientNotFound(e.params["patient_id"]) from e
+            raise
+
+    def get_for_patient(self, patient_id: int) -> List[MedicalAlert]:
+        statement = select(MedicalAlert) \
+            .where(MedicalAlert.patient_id == patient_id)
+        with self._new_session() as session:
+            return session.execute(statement).scalars().all()
 
 
 class PatientNotFound(RuntimeError):

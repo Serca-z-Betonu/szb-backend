@@ -5,8 +5,8 @@ from typing import Dict, List, Tuple
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
-from .models import Activity, Drug, MedicalEvent, Metric, Patient, Prescription
-from .schemas import ActivityRequest, ActivityResponse, DrugResponse, DrugUnit, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex, UpdatePrescriptionRequest
+from .models import Activity, Drug, MedicalAlert, MedicalEvent, Metric, Patient, Prescription
+from .schemas import ActivityRequest, ActivityResponse, DrugResponse, DrugUnit, MedicalAlertResponse, MedicalEventResponse, MedicalEventType, MetricRequest, MetricResponse, MetricSample, MetricType, PatientDetailedResponse, PatientPreviewResponse, PrescribeRequest, PrescriptionStatusResponse, Sex, UpdatePrescriptionRequest
 
 
 def metric_request_to_model(
@@ -129,6 +129,12 @@ def medical_event_model_to_response(model: MedicalEvent):
         summary=model.summary,
         description=model.description,
         timestamp=model.timestamp
+    )
+
+def medical_alert_model_to_response(model: MedicalAlert):
+    return MedicalAlertResponse(
+        medical_alert_id=model.medical_alert_id,
+        message=model.message
     )
 
 def prediction_features(

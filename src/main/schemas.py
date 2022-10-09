@@ -137,6 +137,15 @@ class MedicalEventResponse(BaseModel):
     timestamp: datetime
 
 
+class MedicalAlertRequest(BaseModel):
+    message: str
+
+
+class MedicalAlertResponse(BaseModel):
+    medical_alert_id: int
+    message: str
+
+
 class MessageResponse(BaseModel):
     message: str
 

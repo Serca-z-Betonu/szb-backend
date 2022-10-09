@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 import logging
 from typing import Dict, List
 
-from src.main.models import Metric, Patient, PrescriptionFulfillment
+from src.main.models import MedicalAlert, Metric, Patient, PrescriptionFulfillment
 from src.main.prediction import Predictor
 
 from .mappings import (
     activity_model_to_response,
     activity_request_to_model,
     drug_model_to_response,
+    medical_alert_model_to_response,
     medical_event_model_to_response,
     metric_models_to_response,
     metric_request_to_model,
@@ -21,6 +22,7 @@ from .mappings import (
 from .repositories import (
     ActivityRepository,
     DrugRepository,
+    MedicalAlertRepository,
     MedicalHistoryRepository,
     MetricRepository,
     PatientRepository,
@@ -28,6 +30,8 @@ from .repositories import (
 )
 from .schemas import (
     ActivityRequest,
+    MedicalAlertRequest,
+    MedicalAlertResponse,
     MedicalEventResponse,
     MedicalEventType,
     MetricRequest,
@@ -232,3 +236,25 @@ class MedicalHistoryService:
         medical_event_models = self._repository.get_for_patient(patient_id)
         return [medical_event_model_to_response(model) for
                 model in medical_event_models]
+
+
+class MedicalAlertService:
+
+    def __init__(self, medical_alert_repository: MedicalAlertRepository):
+        self._repository: MedicalAlertRepository = medical_alert_repository
+
+    def create_medical_alert(
+            self,
+            patient_id: int,
+            request: MedicalAlertRequest
+    ):
+        alert_model = MedicalAlert(
+            patient_id=patient_id,
+            message=request.message
+        )
+        self._repository.save(alert_model)
+
+    def get_alerts_for_patient(self, patient_id: int) -> List[MedicalAlertResponse]:
+        alert_models = self._repository.get_for_patient(patient_id=patient_id)
+        return [medical_alert_model_to_response(alert) for
+                alert in alert_models]
