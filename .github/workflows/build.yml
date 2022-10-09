@@ -31,7 +31,7 @@ jobs:
             echo "::set-output name=tag::latest"
           else
             echo "setting tag to ${{ github.run_id }}..."
-            echo "::set-output name=tag::${{ github.run_id }}"
+            echo "::set-output name=tag::${{ github.run_number }}"
           fi
       - name: build and push
         uses: docker/build-push-action@v3
