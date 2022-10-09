@@ -389,9 +389,15 @@ insert into drugs values(8, 'Syrop na kaszel', 'ML');
 commit;
 
 insert into prescriptions (patient_id, drug_id, start_date, end_date, dose_size, daily_dose_count)
-  values(1, 1, '2022-10-01', '2022-11-01', 5, 3);
+  values(1, 1, '2022-10-01', '2022-11-01', 20, 3);
 insert into prescriptions (patient_id, drug_id, start_date, end_date, dose_size, daily_dose_count)
-  values(2, 2, '2022-10-01', '2023-11-01', 5, 3);
+  values(2, 2, '2022-10-01', '2023-11-01', 50, 3);
+insert into prescriptions (patient_id, drug_id, start_date, end_date, dose_size, daily_dose_count)
+  values(3, 5, '2022-10-07', '2022-12-20', 15, 2);
+insert into prescriptions (patient_id, drug_id, start_date, end_date, dose_size, daily_dose_count)
+  values(3, 6, '2022-10-07', '2022-10-15', 30, 1);
+insert into prescriptions (patient_id, drug_id, start_date, end_date, dose_size, daily_dose_count)
+  values(3, 7, '2022-10-07', '2022-11-08', 45, 2);
 commit;
 
 insert into prescription_fulfillments(prescription_id, timestamp) values(1, '2022-10-01T13:00:00Z');
@@ -412,16 +418,29 @@ insert into prescription_fulfillments(prescription_id, timestamp) values(2, '202
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-04T20:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-05T07:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-05T13:00:00Z');
-insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-05T20:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-06T07:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-06T13:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-06T20:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T07:00:00Z');
 insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T13:00:00Z');
-insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-07T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-08T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-08T13:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(2, '2022-10-08T20:00:00Z');
+
+insert into prescription_fulfillments(prescription_id, timestamp) values(3, '2022-10-07T20:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(3, '2022-10-08T07:00:00Z');
+
+insert into prescription_fulfillments(prescription_id, timestamp) values(4, '2022-10-08T15:00:00Z');
+
+insert into prescription_fulfillments(prescription_id, timestamp) values(5, '2022-10-07T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(5, '2022-10-08T07:00:00Z');
+insert into prescription_fulfillments(prescription_id, timestamp) values(5, '2022-10-08T13:00:00Z');
 commit;
 
 insert into medical_events(patient_id, medical_event_type, summary, description, timestamp)
+  values(1, 'ADVISE', 'Ból Pleców', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
+    Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
+    '2022-10-06T12:13:43Z');
   values(1, 'ADVISE', 'Przeziębienie', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae dictum dui. Suspendisse imperdiet consequat sem ac volutpat. Praesent id sapien enim. Phasellus convallis eu lectus vel suscipit. Pellentesque placerat accumsan ligula, sit amet dictum lorem.
     Donec iaculis ligula quis ante finibus rhoncus. Mauris sit amet rutrum elit, ut blandit ex. Donec quis neque diam. Aenean sagittis enim sit amet magna auctor, ac hendrerit leo facilisis. Curabitur nec rutrum quam. Maecenas quis sagittis est, sed pellentesque leo. Duis blandit dictum mollis.',
     '2022-10-06T12:13:43Z');
