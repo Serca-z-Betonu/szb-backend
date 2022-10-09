@@ -101,12 +101,13 @@ def drug_model_to_response(model: Drug):
 def prescription_status_response(
     pairs: List[Tuple[Prescription, Drug]],
     now: datetime
-):
+) -> List[PrescriptionStatusResponse]:
     return [PrescriptionStatusResponse(
         prescription_id=prescription.prescription_id,
         drug_id=drug.drug_id,
         drug_name=drug.name,
         drug_unit=DrugUnit(drug.unit),
+        today_dose_taken_count=prescription.today_dose_taken_count,
         average_actual_daily_dosage=prescription.average_actual_daily_dosage,
         expected_daily_dosage=prescription.expected_daily_dosage,
         expires_at=prescription.start_date,

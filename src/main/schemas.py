@@ -120,6 +120,7 @@ class PrescriptionStatusResponse(BaseModel):
     drug_id: int
     drug_name: str
     drug_unit: DrugUnit
+    today_dose_taken_count: NonNegativeInt
     average_actual_daily_dosage: NonNegativeFloat
     expected_daily_dosage: PositiveFloat
     expires_at: date

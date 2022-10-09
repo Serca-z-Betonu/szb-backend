@@ -101,6 +101,12 @@ class Prescription(Base):
             date.today() >= self.start_date
 
     @property
+    def today_dose_taken_count(self):
+        today = date.today()
+        return len([fulfillment for fulfillment in self.fulfillments if
+                fulfillment.timestamp.date() == today])
+
+    @property
     def average_actual_daily_dosage(self):
         now_date = datetime.now().date()
         days_since_start = relativedelta(now_date, self.start_date).days
