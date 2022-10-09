@@ -76,7 +76,7 @@ class MetricService:
 class PatientService:
 
     DEFAULT_METRICS = {
-        "AFETR_ACTIVITY_HEARTRATE": 149,
+        "AFTER_ACTIVITY_HEARTRATE": 149,
         "BLOOD_PRESSURE_MAX": 131,
         "CHEST_PAIN": 2,
         "CHOLESTEROL": 246,
@@ -128,7 +128,7 @@ class PatientService:
             rest_blood_pressure=metric_map["BLOOD_PRESSURE_MAX"],
             cholesterol=metric_map["CHOLESTEROL"],
             rest_ecg=metric_map["REST_ECG"],
-            heartrate_after_activity=metric_map["AFETR_ACTIVITY_HEARTRATE"],
+            heartrate_after_activity=metric_map["AFTER_ACTIVITY_HEARTRATE"],
         )
         logger.info("Predicting using %s", metric_map |
                     {"age": patient.age, "sex": patient.sex})

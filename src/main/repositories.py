@@ -54,6 +54,8 @@ class MetricRepository(Repository):
             subquery = session.query(
                 Metric.metric_type,  # type: ignore
                 func.max(Metric.timestamp).label("latest_timestamp")
+            ).filter(
+                Metric.patient_id == patient_id
             ).group_by(Metric.metric_type).subquery('t2')
             metrics: List[Metric] = session.query(Metric).join(
                 subquery,
