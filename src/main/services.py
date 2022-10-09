@@ -254,7 +254,16 @@ class MedicalAlertService:
         )
         self._repository.save(alert_model)
 
-    def get_alerts_for_patient(self, patient_id: int) -> List[MedicalAlertResponse]:
-        alert_models = self._repository.get_for_patient(patient_id=patient_id)
+    def read_unread_alerts_for_patient(self, patient_id: int) -> List[MedicalAlertResponse]:
+        alert_models = self._repository.read_unread_for_patient(
+            patient_id=patient_id,
+        )
+        return [medical_alert_model_to_response(alert) for
+                alert in alert_models]
+
+    def get_all_alerts_for_patient(self, patient_id: int) -> List[MedicalAlertResponse]:
+        alert_models = self._repository.get_for_patient(
+            patient_id=patient_id,
+        )
         return [medical_alert_model_to_response(alert) for
                 alert in alert_models]

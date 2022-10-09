@@ -254,8 +254,20 @@ def create_medical_alert(
     response_model=List[MedicalAlertResponse]
 )
 @inject
-def real_medical_alerts_for_patient(
+def get_medical_alerts_for_patient(
     patient_id: int,
     medical_alert_service: MedicalAlertService = Depends(Provide[Container.medical_alert_service])
 ):
-    return medical_alert_service.get_alerts_for_patient(patient_id=patient_id)
+    return medical_alert_service.get_all_alerts_for_patient(patient_id=patient_id)
+
+
+@router.post(
+    "/medical-alerts/read",
+    response_model=List[MedicalAlertResponse]
+)
+@inject
+def get_medical_alerts_for_patient(
+    patient_id: int,
+    medical_alert_service: MedicalAlertService = Depends(Provide[Container.medical_alert_service])
+):
+    return medical_alert_service.read_unread_alerts_for_patient(patient_id=patient_id)

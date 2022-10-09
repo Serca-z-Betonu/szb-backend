@@ -162,3 +162,4 @@ class MedicalAlert(Base):
         ForeignKey("patients.patient_id")
     )
     message: str = Column(TEXT) # type: ignore
+    is_read: bool = Column(BOOLEAN, server_default=expression.false()) # type: ignore

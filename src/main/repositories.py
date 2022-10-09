@@ -241,11 +241,32 @@ class MedicalAlertRepository(Repository):
                 raise PatientNotFound(e.params["patient_id"]) from e
             raise
 
-    def get_for_patient(self, patient_id: int) -> List[MedicalAlert]:
+    def get_for_patient(
+        self,
+        patient_id: int,
+    ) -> List[MedicalAlert]:
         statement = select(MedicalAlert) \
             .where(MedicalAlert.patient_id == patient_id)
         with self._new_session() as session:
             return session.execute(statement).scalars().all()
+
+    def read_unread_for_patient(
+        self,
+        patient_id: int,
+    ) -> List[MedicalAlert]:
+        statement = select(MedicalAlert) \
+            .where(
+                MedicalAlert.patient_id == patient_id,
+                MedicalAlert.is_read == False
+            )
+        with self._new_session() as session:
+            alerts = session.execute(statement).scalars().all()
+            for alert in alerts:
+                alert.is_read = True
+            session.commit()
+            for alert in alerts:
+                session.refresh(alert)
+            return alerts
 
 
 class PatientNotFound(RuntimeError):
